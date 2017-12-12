@@ -31,11 +31,24 @@ export class FileSelectDirective {
     let options = this.getOptions();
     let filters = this.getFilters();
 
-    this.uploader.addToQueue(files, options, filters);
-    this.onFileSelected.emit(files);
+    if files.length <= 100{
 
-    if (this.isEmptyAfterSelection()) {
-      this.element.nativeElement.value = '';
+      // console.log(files)
+
+      console.log("选中文件个数:" + files.length)
+      for(let file of files){
+        console.log(file.name + " - " + file.webkitRelativePath)
+      }
+
+      this.uploader.addToQueue(files, options, filters);
+      this.onFileSelected.emit(files);
+
+      if (this.isEmptyAfterSelection()) {
+        this.element.nativeElement.value = '';
+      }
+    }
+    else{
+      console.log("选中文件个数太多, 忽略:" + files.length)
     }
   }
 }

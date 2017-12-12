@@ -8,14 +8,13 @@
 
 <div class="container">
 
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> 
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
     <div class="row">
- 
+
         <div class="col-md-3">
- 
-            <h3>选择文件</h3>
- 
+
+            <h3>选择文件, 每个都是单独样本</h3>
             <div ng2FileDrop
                  [ngClass]="{'nv-file-over': hasBaseDropZoneOver}"
                  (fileOver)="fileOverBase($event)"
@@ -23,14 +22,23 @@
                  class="well my-drop-zone">
                  拖放文件(目前不支持文件夹)
             </div>
- 
+            <!--
+            Single
+            <input type="file" ng2FileSelect [uploader]="uploader" />
+
+            Multiple
+            <input type="file" ng2FileSelect multiple [uploader]="uploader" />
+            -->
+            <h3>选择目录(样本及其衍生物)</h3>
+            <input type="file" ng2FileSelect webkitdirectory [uploader]="uploader" />
+
         </div>
- 
+
         <div class="col-md-9" style="margin-bottom: 40px">
- 
+
             <h3>上传队列</h3>
             <p>队列长度: {{ uploader?.queue?.length }}</p>
- 
+
             <table class="table">
                 <thead>
                 <tr>
@@ -72,7 +80,7 @@
                 </tr>
                 </tbody>
             </table>
- 
+
             <div>
                 <div>
                     上传进度:
@@ -93,9 +101,9 @@
                     <span class="glyphicon glyphicon-trash"></span> 删除全部
                 </button>
             </div>
- 
+
         </div>
- 
+
     </div>
- 
+
 </div>
