@@ -22,6 +22,7 @@ class LogLine(mongoengine.Document):
 
 class Sample(mongoengine.Document):
     """样本"""
+    meta = {'collection': "sample"}
 
     _binary = mongoengine.BinaryField()                                            # 二进制数据
 
