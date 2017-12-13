@@ -31,8 +31,9 @@ export class FileSelectDirective {
     let options = this.getOptions();
     let filters = this.getFilters();
 
-    if files.length <= 100{
+    if (files.length <= 100){
 
+      // console.log(this.element)
       // console.log(files)
 
       console.log("选中文件个数:" + files.length)

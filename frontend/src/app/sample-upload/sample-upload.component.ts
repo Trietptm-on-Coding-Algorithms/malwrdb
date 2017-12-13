@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FileUploader } from './upload'
 
-const URL = 'http://127.0.0.1:5000/sample_upload/';
+const URL = 'http://127.0.0.1:5000/sample/upload/';
 
 @Component({
   selector: 'sample-upload',
@@ -34,6 +34,7 @@ export class SampleUploadComponent {
 
     this.hasBaseDropZoneOver = false;
     this.hasAnotherDropZoneOver = false;
+
 
     this.response = '';
 

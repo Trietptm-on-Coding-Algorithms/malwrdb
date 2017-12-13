@@ -57,7 +57,7 @@ def log_ii(interface_name, msg, info=None, is_print=True, level="DEBUG"):
 
 def sample_check_or_insert(sample_binary):
     """
-        检查 sample 的 sha256, 没有则插入, 有则返回数据库中的 Sample
+    检查 sample 的 sha256, 没有则插入, 有则返回数据库中的 Sample
     """
     sha256 = hashlib.sha256(sample_binary).hexdigest()
 

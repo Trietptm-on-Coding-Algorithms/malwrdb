@@ -16,15 +16,7 @@ export class TestComponent implements OnInit {
   }
 
   doTest(): void {
-    console.log("xxxxxxxxxx")
-  	// this.data = this._dtctx.getTestData()
-    //const testFolder = './tests/';
-    //const fs = require('fs');
-//
-    //fs.readdir(testFolder, (err, files) => {
-    //  files.forEach(file => {
-    //    console.log(file);
-    //  });
+    this._dtctx.doTest()
   }
 
 }
