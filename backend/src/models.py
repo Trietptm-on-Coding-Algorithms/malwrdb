@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import json
 from datetime import datetime
 
 from flask_mongoengine import mongoengine
@@ -57,5 +58,13 @@ class Sample(mongoengine.Document):
 
     def to_filter(self):
         return {"sha256": self.sha256}
+
+    def json_ui(self):
+        """返回到界面的 Json"""
+        ret = json.loads(self.to_json())
+        print(type(ret))
+
+        del ret["_binary"]
+        return ret
 
 # -------------------------------------------------------------------------

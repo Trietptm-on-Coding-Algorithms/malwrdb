@@ -10,6 +10,7 @@ export class DataContextService {
 
     }
 
+    // 获取样本数目
     getSampleCount(): number{
         this._http.get(this.baseUrl + '/sample/action/?action=count&type=all&author=all')
         .subscribe(
@@ -23,8 +24,22 @@ export class DataContextService {
         return 0;
     }
 
+    // 获取样本列表
+    getSampleList(): void{
+        this._http.get(this.baseUrl + '/sample/action/?action=list&type=all&author=all')
+        .subscribe(
+            data =>{
+                console.log(data.json());
+            },
+            error =>{
+                console.log(error);
+            }
+        );
+    }
+
     doTest(): void{
-        this.getSampleCount()
+        // this.getSampleCount()
+        this.getSampleList()
     }
 
     getTestData(): void {

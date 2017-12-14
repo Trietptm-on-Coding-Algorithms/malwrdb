@@ -14,7 +14,7 @@ from tasks import *
 # -------------------------------------------------------------------------
 
 app = Flask(__name__)
-
+CORS(app, supports_credentials=True)
 # -------------------------------------------------------------------------
 # MongoDB 数据库
 
@@ -32,7 +32,7 @@ db = MongoEngine(app)
 # -------------------------------------------------------------------------
 # 跨站
 
-CORS(app, supports_credentials=True)
+
 
 # -------------------------------------------------------------------------
 
@@ -99,6 +99,12 @@ class TestIt(Resource):
 class SampleSimpleAction(Resource):
     """针对样本的各种简单行为"""
     def get(self):
+        try:
+            return self._get()
+        except Exception as e:
+            print("异常: SampleSimpleAction: %s" % e)
+
+    def _get(self):
         action = request.args.get("action", None)
         if not action:
             return "无效的行为类型"
@@ -108,6 +114,9 @@ class SampleSimpleAction(Resource):
 
         elif action == "check_exists":
             return self._check_exists()
+
+        elif action == "list":
+            return self._list()
 
         else:
             return "不支持的操作类型"
@@ -120,6 +129,16 @@ class SampleSimpleAction(Resource):
         print("get sample count: type: %s, author: %s" % (type_, author))
 
         return Sample.objects.count()
+
+    def _list(self):
+        # 列表
+        type_ = request.args.get("type", "all")
+        author = request.args.get("author", "all")
+
+        ret = []
+        for sample in Sample.objects():
+            ret.append(sample.json_ui())
+        return ret
 
     def _check_exists(self):
         # 检查是否存在

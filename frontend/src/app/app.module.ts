@@ -38,6 +38,7 @@ import '../styles/styles.scss';
 import '../styles/headings.css';
 
 import { SampleUploadComponent } from './sample-upload/sample-upload.component';
+import { SampleListComponent } from './sample-list/sample-list.component';
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -63,7 +64,8 @@ type StoreType = {
     NoContentComponent,
     XLargeDirective,
     TestComponent,
-    SampleUploadComponent
+    SampleUploadComponent,
+    SampleListComponent
   ],
   /**
    * Import Angular's modules.
