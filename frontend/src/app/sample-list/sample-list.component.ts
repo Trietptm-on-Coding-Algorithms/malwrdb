@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
+import {ServerDataService} from '../services/server-data.service'
+import {Sample} from '../models/sample'
+
 @Component({
   selector: 'app-sample-list',
   templateUrl: './sample-list.component.html',
@@ -7,9 +10,22 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SampleListComponent implements OnInit {
 
-  constructor() { }
+    sample_list: Sample[];
 
-  ngOnInit() {
-  }
+    constructor(private _dtctx: ServerDataService) { }
+
+    ngOnInit() {
+        this.getSampleList();
+    }
+
+    getSampleList(): void{
+        this._dtctx.getSampleList()
+            .subscribe(
+                v => {
+                    console.log("xx")
+                    this.sample_list = v;
+                }
+            );
+    }
 
 }

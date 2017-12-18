@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DataContextService } from '../services/datacontext.service'
+import { ServerDataService } from '../services/server-data.service'
 
 @Component({
   selector: 'test',
@@ -10,7 +10,7 @@ export class TestComponent implements OnInit {
 
   data: any;
 
-  constructor(private _dtctx: DataContextService) { }
+  constructor(private _dtctx: ServerDataService) { }
 
   ngOnInit() {
   }

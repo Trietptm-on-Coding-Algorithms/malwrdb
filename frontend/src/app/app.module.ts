@@ -32,13 +32,15 @@ import { NoContentComponent } from './no-content';
 //
 import { XLargeDirective } from './home/x-large';
 
-import { DataContextService } from './services/datacontext.service'
+//
+import { ServerDataService } from './services/server-data.service'
 
 import '../styles/styles.scss';
 import '../styles/headings.css';
 
 import { SampleUploadComponent } from './sample-upload/sample-upload.component';
 import { SampleListComponent } from './sample-list/sample-list.component';
+import { SampleDetailComponent } from './sample-detail/sample-detail.component';
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -65,7 +67,8 @@ type StoreType = {
     XLargeDirective,
     TestComponent,
     SampleUploadComponent,
-    SampleListComponent
+    SampleListComponent,
+    SampleDetailComponent
   ],
   /**
    * Import Angular's modules.
@@ -95,7 +98,7 @@ type StoreType = {
   providers: [
     environment.ENV_PROVIDERS,
     APP_PROVIDERS,
-    DataContextService,
+    ServerDataService,
   ]
 })
 export class AppModule {}
