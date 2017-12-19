@@ -1,16 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 
+import { SharedDataService } from '../services/shared-data.service';
+import { Sample } from '../models/sample';
+
 @Component({
   selector: 'sample-detail',
   templateUrl: './sample-detail.component.html',
   styleUrls: ['./sample-detail.component.css']
 })
 export class SampleDetailComponent implements OnInit {
+  sample: Sample;
 
-  constructor() { }
+  constructor(private _shrdata: SharedDataService) {
+  }
 
   ngOnInit() {
-      console.log("init sample detail component");
+    this.sample = this._shrdata.currentSample;
   }
 
 }

@@ -14,10 +14,11 @@ from tasks import *
 # -------------------------------------------------------------------------
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
-# -------------------------------------------------------------------------
-# MongoDB 数据库
 
+# 跨站
+CORS(app, supports_credentials=True)
+
+# MongoDB 数据库
 app.config["MONGODB_SETTINGS"] = {
     "host": "127.0.0.1",
     "port": 27017,
@@ -27,11 +28,6 @@ app.config["MONGODB_SETTINGS"] = {
     "db": "malwrdb"
 }
 db = MongoEngine(app)
-
-
-# -------------------------------------------------------------------------
-# 跨站
-
 
 
 # -------------------------------------------------------------------------
@@ -153,9 +149,6 @@ class SampleUpload(Resource):
     """样本上传"""
     def post(self):
         try:
-            print(request.files)
-            print(request.form)
-            print(request.args)
             file = request.files['file']
             if file:
                 # print(type(file))         -> werkzeug.datastructures.FileStorage

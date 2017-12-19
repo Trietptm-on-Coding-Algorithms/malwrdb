@@ -1,4 +1,4 @@
-// Modules - Angular
+// Angular模块
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -6,12 +6,13 @@ import { HttpModule } from '@angular/http';
 import { RouterModule, PreloadAllModules } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-// Modules - 3rd Party
+// 第三方模块
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-// Modules - mine
+// 咱自己的模块
 import { UploadModule } from './sample-upload/upload'
 import { DevModuleModule } from './+dev-module';
+import { MaterialComponentModule } from './modules/material-component.module';
 
 /*
  * Platform and Environment providers/directives/pipes
@@ -32,8 +33,9 @@ import { NoContentComponent } from './no-content';
 //
 import { XLargeDirective } from './home/x-large';
 
-//
-import { ServerDataService } from './services/server-data.service'
+// 自己定义的服务
+import { ServerDataService } from './services/server-data.service';
+import { SharedDataService } from './services/shared-data.service';
 
 import '../styles/styles.scss';
 import '../styles/headings.css';
@@ -58,7 +60,7 @@ type StoreType = {
  * `AppModule` is the main entry point into Angular2's bootstraping process
  */
 @NgModule({
-  bootstrap: [ AppComponent ],
+  bootstrap: [AppComponent],
   declarations: [
     AppComponent,
     AboutComponent,
@@ -79,6 +81,7 @@ type StoreType = {
     FormsModule,
     HttpModule,
     UploadModule,
+    MaterialComponentModule,
     NgbModule.forRoot(),
     RouterModule.forRoot(ROUTES, {
       useHash: Boolean(history.pushState) === false,
@@ -90,7 +93,7 @@ type StoreType = {
      * When the module is not imported it will get tree shaked.
      * This is a simple example, a big app should probably implement some logic
      */
-    ...environment.showDevModule ? [ DevModuleModule ] : [],
+    ...environment.showDevModule ? [DevModuleModule] : [],
   ],
   /**
    * Expose our Services and Providers into Angular's dependency injection.
@@ -99,6 +102,7 @@ type StoreType = {
     environment.ENV_PROVIDERS,
     APP_PROVIDERS,
     ServerDataService,
+    SharedDataService,
   ]
 })
-export class AppModule {}
+export class AppModule { }

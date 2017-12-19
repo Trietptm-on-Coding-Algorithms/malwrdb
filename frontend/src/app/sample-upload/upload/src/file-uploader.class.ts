@@ -45,10 +45,10 @@ export class FileUploader {
 
   public authToken: string;
   public isUploading: boolean = false;
-  public queue: FileItem[] = [];
-  public progress: number = 0;
+  public queue: FileItem[] = [];                       // 文件队列
+  public progress: number = 0;                         // 进度
   public _nextIndex: number = 0;
-  public autoUpload: any;
+  public autoUpload: any;                              // 自动上传
   public authTokenHeader: string;
   public response: EventEmitter<any>;
 
@@ -356,6 +356,7 @@ export class FileUploader {
       this._onCancelItem(item, response, xhr.status, headers);
       this._onCompleteItem(item, response, xhr.status, headers);
     };
+		// console.log(item.method + item.url);
     xhr.open(item.method, item.url, true);
     xhr.withCredentials = item.withCredentials;
     if (this.options.headers) {
@@ -378,7 +379,9 @@ export class FileUploader {
     }
     if (this.options.formatDataFunctionIsAsync) {
       sendable.then(
-        (result: any) => xhr.send(JSON.stringify(result))
+        (result: any) => {
+					xhr.send(JSON.stringify(result));
+				}
       );
     } else {
       xhr.send(sendable);

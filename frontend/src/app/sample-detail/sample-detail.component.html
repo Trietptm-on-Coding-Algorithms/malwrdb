@@ -1,3 +1,7 @@
-<p>
-  sample-detail works!
-</p>
+<h1>样本详情</h1>
+<div *ngIf="sample" class='container'>
+  <p>{{ sample.md5 }}</p>
+  <p>{{ sample.sha1 }}</p>
+  <p>{{ sample.sha128 }}</p>
+  <p>{{ sample.sha256 }}</p>
+</div>

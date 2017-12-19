@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FileUploader } from './upload'
 
+import { MaterialComponentModule } from '../modules/material-component.module';
+import { FileUploader } from './upload';
+
+// 变量
 const URL = 'http://127.0.0.1:5000/sample/upload/';
 
 @Component({
@@ -10,42 +13,16 @@ const URL = 'http://127.0.0.1:5000/sample/upload/';
 })
 export class SampleUploadComponent {
 
-  uploader:FileUploader;
-  hasBaseDropZoneOver:boolean;
-  hasAnotherDropZoneOver:boolean;
-  response:string;
+  public sample_uploader: FileUploader = new FileUploader({ url: URL });
+  public group_uploader: FileUploader = new FileUploader({ url: URL });
+  public hasBaseDropZoneOver: boolean = false;
+  public hasAnotherDropZoneOver: boolean = false;
 
-  constructor (){
-    this.uploader = new FileUploader({
-      url: URL,
-      disableMultipart: true, // 'DisableMultipart' must be 'true' for formatDataFunction to be called.
-      formatDataFunctionIsAsync: true,
-      formatDataFunction: async (item) => {
-        return new Promise( (resolve, reject) => {
-          resolve({
-            name: item._file.name,
-            length: item._file.size,
-            contentType: item._file.type,
-            date: new Date()
-          });
-        });
-      }
-    });
-
-    this.hasBaseDropZoneOver = false;
-    this.hasAnotherDropZoneOver = false;
-
-
-    this.response = '';
-
-    this.uploader.response.subscribe( res => this.response = res );
-  }
-
-  public fileOverBase(e:any):void {
+  public fileOverBase(e: any): void {
     this.hasBaseDropZoneOver = e;
   }
 
-  public fileOverAnother(e:any):void {
+  public fileOverAnother(e: any): void {
     this.hasAnotherDropZoneOver = e;
   }
 }

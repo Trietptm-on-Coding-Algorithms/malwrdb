@@ -1,5 +1,9 @@
+<h1>样本列表</h1>
 <button (click)="getSampleList()">获取列表</button>
+<div *ngIf="is_updating">正在获取...</div>
 <div *ngFor="let sample of sample_list">
-    <a href="/sample-detail/?sha256={{sample.sha256}}">{{sample.sha256}}</a>
+    <div (click)="selectSample(sample)">
+      {{ sample.sha256 }}
+    </div>
     <br/>
 </div>

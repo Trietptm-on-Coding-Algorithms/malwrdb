@@ -9,7 +9,9 @@ from flask_mongoengine import mongoengine
 # -------------------------------------------------------------------------
 
 class LogLine(mongoengine.Document):
-    """日志"""
+    """
+    日志
+    """
     meta = {'collection': "log_line"}
 
     file = mongoengine.StringField()                     # 代码文件
@@ -22,8 +24,14 @@ class LogLine(mongoengine.Document):
 
 
 class Sample(mongoengine.Document):
-    """样本"""
+    """
+    样本
+    1. 不能重复
+    2. 1个可以属于多个组
+    """
     meta = {'collection': "sample"}
+
+    group_id_list = mongoengine.ListField(mongoengine.IntField())                  # 组 ID 列表
 
     _binary = mongoengine.BinaryField()                                            # 二进制数据
 
@@ -62,7 +70,31 @@ class Sample(mongoengine.Document):
     def json_ui(self):
         """返回到界面的 Json"""
         ret = json.loads(self.to_json())
-        print(type(ret))
+
+        del ret["_binary"]
+        return ret
+
+
+class RefFile(mongoengine.Document):
+    """
+    参考文件
+    1. 可以重复
+    2. 1个只能属于1组
+    """
+    meta = {'collection': "ref_file"}
+
+    group_id = mongoengine.IntField()                                              # 组 ID
+    _binary = mongoengine.BinaryField()                                            # 二进制数据
+
+    file_name = mongoengine.StringField()                                          # 文件名, 添加时设置. 不是路径
+    sample_size = mongoengine.IntField()                                           # 样本大小
+    file_type = mongoengine.StringField()                                          # 样本文件类型
+
+    parent__sample_id = mongoengine.ObjectIdField()                                # 父样本 id
+
+    def json_ui(self):
+        """返回到界面的 Json"""
+        ret = json.loads(self.to_json())
 
         del ret["_binary"]
         return ret
