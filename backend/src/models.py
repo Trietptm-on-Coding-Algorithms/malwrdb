@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import hashlib
 from datetime import datetime
 
 from flask_mongoengine import mongoengine
@@ -23,41 +24,70 @@ class LogLine(mongoengine.Document):
         self.time = datetime.now()
 
 
+class RefGroup(mongoengine.Document):
+    """
+    a group of refFiles/dirs/samples
+    """
+    meta = {'collection': "ref_group"}
+
+    group_id = mongoengine.StringField(required=True)
+
+
+class RefDir(mongoengine.Document):
+    """
+    so we can orginaze files
+    """
+    meta = {'collection': "ref_dir"}
+
+    dir_name = mongoengine.StringField(required=True)
+
+    refGroup = mongoengine.ReferenceField('RefGroup', required=True)
+    parnetRefDir = mongoengine.ReferenceField('self')
+
+
+class SampleBelongTo(mongoengine.Document):
+    """
+    use this to decide "location" of a sample
+    """
+    meta = {'collection': "sample_belongto"}
+
+    refGroup = mongoengine.ReferenceField('RefGroup', required=True)
+    refDir = mongoengine.ReferenceField('RefDir', required=True)
+
+    sample_id = mongoengine.StringField(required=True)
+    parent_sample_id = mongoengine.StringField()
+    parent_sample_to_this_type = mongoengine.StringField()
+
+    sample_name = mongoengine.StringField(required=True)
+    sample_relative_path = mongoengine.StringField()
+
+
 class Sample(mongoengine.Document):
     """
-    样本
-    1. 不能重复
-    2. 1个可以属于多个组
+    sample. only "solid" information
     """
     meta = {'collection': "sample"}
 
-    group_id_list = mongoengine.ListField(mongoengine.IntField())                  # 组 ID 列表
+    _binary = mongoengine.BinaryField()
 
-    _binary = mongoengine.BinaryField()                                            # 二进制数据
+    md5 = mongoengine.StringField(max_length=32, min_length=32)
+    sha1 = mongoengine.StringField(max_length=40, min_length=40)
+    sha256 = mongoengine.StringField(max_length=64, min_length=64)
+    sha512 = mongoengine.StringField(max_length=128, min_length=128)
 
-    file_name = mongoengine.StringField()                                          # 文件名, 添加时设置. 不是路径
-    sample_size = mongoengine.IntField()                                           # 样本大小
-    file_type = mongoengine.StringField()                                          # 样本文件类型
+    sample_size = mongoengine.IntField()
+    sample_file_type = mongoengine.StringField()
 
-    md5 = mongoengine.StringField(max_length=32, min_length=32)                    # 哈希值 - MD5    - 长度32
-    sha1 = mongoengine.StringField(max_length=40, min_length=40)                   # 哈希值 - SHA1   - 长度40
-    sha256 = mongoengine.StringField(max_length=64, min_length=64)                 # 哈希值 - SHA256 - 长度64
-    sha512 = mongoengine.StringField(max_length=128, min_length=128)               # 哈希值 - SHA512 - 长度128
-    ssdeep = mongoengine.StringField()                                             # 哈希值 - ssdeep
-    imphash = mongoengine.StringField()                                            # 哈希值 - 导入表
-    crc32 = mongoengine.StringField()                                              # 哈希值 - CRC32
+    ssdeep = mongoengine.StringField()
+    imphash = mongoengine.StringField()
+    crc32 = mongoengine.StringField()
 
-    platform = mongoengine.StringField()                                           # 平台
-    is_malicious = mongoengine.BooleanField()                                      # 是否恶意
-    malware_name_list = mongoengine.ListField()                                    # 恶意名称列表(某些恶意代码有多个名称)
-    malware_family_list = mongoengine.ListField()                                  # 恶徒家族列表
+    platform = mongoengine.StringField()
+    is_malicious = mongoengine.BooleanField()
+    malware_name_list = mongoengine.ListField()
+    malware_family_list = mongoengine.ListField()
 
-    parent__sample_id = mongoengine.ObjectIdField()                                # 父样本 id
-    parent__sample_to_this_type = mongoengine.StringField()                        # 与父样本的关系(有choices)
-
-    #
-
-    analyze_time = mongoengine.DateTimeField()                                     # 分析时间(手动设置). 为 None 表示没分析过
+    analyze_time = mongoengine.DateTimeField()
 
     update_time = mongoengine.DateTimeField()
 
@@ -75,22 +105,47 @@ class Sample(mongoengine.Document):
         return ret
 
 
+class RefFileBelongTo(mongoengine.Document):
+    """
+    use this to decide "location" of a refFile
+    """
+    meta = {'collection': "ref_file_belongto"}
+
+    refGroup = mongoengine.ReferenceField('RefGroup', required=True)
+    refDir = mongoengine.ReferenceField('RefDir', required=True)
+
+    ref_file_id = mongoengine.StringField(required=True)
+
+    file_name = mongoengine.StringField(required=True)
+    file_relative_path = mongoengine.StringField()
+
+
 class RefFile(mongoengine.Document):
     """
-    参考文件
-    1. 可以重复
-    2. 1个只能属于1组
+    File for Reference
     """
     meta = {'collection': "ref_file"}
 
-    group_id = mongoengine.IntField()                                              # 组 ID
-    _binary = mongoengine.BinaryField()                                            # 二进制数据
+    _binary = mongoengine.BinaryField()
 
-    file_name = mongoengine.StringField()                                          # 文件名, 添加时设置. 不是路径
-    sample_size = mongoengine.IntField()                                           # 样本大小
-    file_type = mongoengine.StringField()                                          # 样本文件类型
+    md5 = mongoengine.StringField(max_length=32, min_length=32)
+    sha1 = mongoengine.StringField(max_length=40, min_length=40)
+    sha256 = mongoengine.StringField(max_length=64, min_length=64)
+    sha512 = mongoengine.StringField(max_length=128, min_length=128)
 
-    parent__sample_id = mongoengine.ObjectIdField()                                # 父样本 id
+    file_size = mongoengine.IntField()
+    file_type = mongoengine.StringField()
+
+    def clean(self):
+        if self._binary and len(self._binary) != 0:
+
+            self.file_size = len(self._binary)
+            self.md5 = hashlib.md5(self._binary).hexdigest()
+            self.sha1 = hashlib.sha1(self._binary).hexdigest()
+            self.sha256 = hashlib.sha256(self._binary).hexdigest()
+            self.sha512 = hashlib.sha512(self._binary).hexdigest()
+        else:
+            self.file_size = 0
 
     def json_ui(self):
         """返回到界面的 Json"""

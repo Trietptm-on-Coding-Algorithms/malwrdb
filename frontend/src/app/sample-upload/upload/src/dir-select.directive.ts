@@ -5,7 +5,7 @@ import { FileUploader } from './file-uploader.class';
 @Directive({ selector: '[ng2DirSelect]' })
 export class DirSelectDirective {
   @Input() public uploader: FileUploader;
-  @Output() public onFileSelected: EventEmitter<File[]> = new EventEmitter<File[]>();
+  @Output() public OnDirChanged: EventEmitter<File[]> = new EventEmitter<File[]>();
 
   protected element: ElementRef;
 
@@ -31,18 +31,17 @@ export class DirSelectDirective {
     let options = this.getOptions();
     let filters = this.getFilters();
 
-    if (files.length <= 100) {
-      //
-      // // console.log(this.element)
-      // // console.log(files)
-      //
-      // console.log("选中文件个数:" + files.length)
-      // for(let file of files){
-      //   console.log(file.name + " - " + file.webkitRelativePath)
-      // }
+    if (files.length == 0){
+      console.log("no file in target dir, ignore this action");
 
+    }
+    else if (files.length <= 100) {
+
+      console.log("file count in selected dir:" + files.length);
+
+      this.uploader.clearQueue();
       this.uploader.addToQueue(files, options, filters);
-      this.onFileSelected.emit(files);
+      this.OnDirChanged.emit(files);
 
       if (this.isEmptyAfterSelection()) {
         this.element.nativeElement.value = '';

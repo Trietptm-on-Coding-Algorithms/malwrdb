@@ -55,6 +55,11 @@ export class FileItem {
     this.uploader.removeFromQueue(this);
   }
 
+  // update url for each file
+  public updateUrl(url: string){
+      this.url = url;
+  }
+
   public onBeforeUpload(): void {
     return void 0;
   }

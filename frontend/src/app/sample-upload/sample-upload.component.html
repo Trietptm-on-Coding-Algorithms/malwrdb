@@ -1,16 +1,17 @@
 <button mat-raised-button color="primary" (click)="showSuccess()">测试</button>
 
 
-<!-- 选择目录, 目录中文件作为样本组 *ngIf="!group_uploader.queue.length"-->
-<div colspan="1" rowspan="1">
+<!-- 选择目录, 目录中文件作为样本组 -->
+<div colspan="1" rowspan="1" *ngIf="!group_uploader.queue.length">
   <h3>选择目录(样本及其衍生物)</h3>
-  <input type="file" ng2DirSelect webkitdirectory [uploader]="group_uploader" />
+  <input type="file" ng2DirSelect webkitdirectory [uploader]="group_uploader" (OnDirChanged)="groupDirChanged($event)"/>
 </div>
 <!-- 目录中的文件列表 -->
 <div colspan="3" rowspan="1">
   <div>
 
     <h3>上传队列</h3>
+    <p *ngIf="group_id">{{ group_id }}</p>
     <p>队列长度: {{ group_uploader?.queue?.length }}</p>
 
     <table class="table">
@@ -41,8 +42,8 @@
 
     <div>
       <mat-progress-bar color="primary" mode="determinate" [value]="group_uploader.progress"></mat-progress-bar>
-      <button mat-raised-button color="primary" (click)="group_uploader.uploadAll()" [disabled]="!group_uploader.getNotUploadedItems().length">上传</button>
-      <button mat-raised-button color="warn" (click)="group_uploader.clearQueue()" [disabled]="!group_uploader.queue.length">取消</button>
+      <button mat-raised-button color="primary" (click)="groupDirUpload($event)" [disabled]="!group_uploader.getNotUploadedItems().length">Upload</button>
+      <button mat-raised-button color="warn" (click)="groupDirClean($event)" [disabled]="!group_uploader.queue.length">Clear</button>
     </div>
 
   </div>
