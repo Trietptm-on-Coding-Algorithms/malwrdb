@@ -3,7 +3,9 @@ import { Router } from '@angular/router';
 
 import { ServerDataService } from '../services/server-data.service';
 import { SharedDataService } from '../services/shared-data.service';
-import { Sample } from '../models/sample'
+import { RefGroup, Sample } from '../models/models';
+
+import { RefGroupComponent } from './ref-group/ref-group.component';
 
 @Component({
   selector: 'app-sample-list',
@@ -13,7 +15,8 @@ import { Sample } from '../models/sample'
 export class SampleListComponent implements OnInit {
 
   is_updating: boolean = false;
-  sample_list: Sample[];
+
+  group_list: RefGroup[];
 
   constructor(
     private _router: Router,
@@ -22,20 +25,16 @@ export class SampleListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // 只在没有数据时请求数据
-    if (this._shrdata.sample_list == undefined || this._shrdata.sample_list.length == 0) {
-      this.getSampleList();
-    }else{
-      this.sample_list = this._shrdata.sample_list;
-    }
+
   }
 
-  getSampleList(): void {
+
+  getGroupList(): void{
     this.is_updating = true;
-    this._svrdata.getSampleList().subscribe(
+    this._svrdata.getGroupList().subscribe(
       v => {
-        this.sample_list = v;
-        this._shrdata.sample_list = v;
+        this.group_list = v;
+        this.is_updating = false;
       },
       e => {
         this.is_updating = false;
@@ -44,10 +43,5 @@ export class SampleListComponent implements OnInit {
         this.is_updating = false;
       }
     );
-  }
-
-  selectSample(sample: Sample): void {
-    this._shrdata.currentSample = sample;
-    this._router.navigate(['/sample-detail']);
   }
 }

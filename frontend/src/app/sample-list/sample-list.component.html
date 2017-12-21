@@ -1,9 +1,7 @@
 <h1>样本列表</h1>
-<button (click)="getSampleList()">获取列表</button>
+<button (click)="getGroupList()">获取列表</button>
 <div *ngIf="is_updating">正在获取...</div>
-<div *ngFor="let sample of sample_list">
-    <div (click)="selectSample(sample)">
-      {{ sample.sha256 }}
-    </div>
+<div *ngFor="let group of group_list">
+    <ref-group [refGroup]="group"></ref-group>
     <br/>
 </div>

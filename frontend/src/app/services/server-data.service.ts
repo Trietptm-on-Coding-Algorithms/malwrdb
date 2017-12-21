@@ -4,7 +4,7 @@ import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
 
-import { Sample } from '../models/sample'
+import { RefGroup, RefDir, RefFile, Sample } from '../models/models'
 
 @Injectable()
 export class ServerDataService {
@@ -21,16 +21,40 @@ export class ServerDataService {
   //         .map(res => res.json);
   // }
 
-  // 获取样本列表
-  getSampleList(): Observable<Sample[]> {
-    console.log("get sample list from server");
-    return this._http.get(this.baseUrl + '/sample/action/?action=list&type=all&author=all')
-      .map(res => res.json());
-  }
+
+    // get all RefGroup list
+    getGroupList(): Observable<RefGroup[]> {
+        return this._http.get(this.baseUrl + '/action/?action=get_refGroupList')
+            .map(res => res.json());
+    }
+
+  // get top refDir by group_id
+    getTopRefDir(group_id: string): Observable<RefDir[]>{
+        return this._http.get(this.baseUrl + '/action/?action=get_topRefDirs&group_id=' + group_id)
+            .map(res => res.json());
+    }
+
+    // get sub RefDir by RefDirId
+    getSubRefDirs(refDir_id: string): Observable<RefDir[]> {
+        return this._http.get(this.baseUrl + '/action/?action=get_subRefDirs&refDir_id=' + refDir_id)
+            .map(res => res.json());
+    }
+
+    // get sub Sample by RefDirId
+    getSubSamples(refDir_id: string): Observable<Sample[]> {
+        return this._http.get(this.baseUrl + '/action/?action=get_subSamples&refDir_id=' + refDir_id)
+            .map(res => res.json());
+    }
+
+
+    // get sub refFile by RefDirId
+    getSubRefFiles(refDir_id: string): Observable<RefFile[]>{
+        return this._http.get(this.baseUrl + '/action/?action=get_subRefFiles&refDir_id=' + refDir_id)
+            .map(res => res.json());
+    }
 
   doTest(): void {
-    // this.getSampleCount()
-    this.getSampleList()
+
   }
 
   // getTestData(): void {

@@ -36,6 +36,14 @@ class RefGroup(mongoengine.Document):
     def clean(self):
         self.update_time = datetime.now()
 
+    def json_ui(self):
+        ret = json.loads(self.to_json())
+
+        del ret["_id"]
+        del ret["add_time"]
+
+        return ret
+
 
 class RefDir(mongoengine.Document):
     """
@@ -50,6 +58,18 @@ class RefDir(mongoengine.Document):
 
     def clean(self):
         self.refGroup.save()  # update it's update_time
+
+    def json_ui(self):
+        ret = json.loads(self.to_json())
+
+        # # frontend need this _id as string
+        ret["_id"] = str(self.pk)
+
+        del ret["refGroup"]
+        if "parnetRefDir" in ret:
+            del ret["parnetRefDir"]
+
+        return ret
 
 
 class SampleBelongTo(mongoengine.Document):
@@ -111,6 +131,7 @@ class Sample(mongoengine.Document):
         """返回到界面的 Json"""
         ret = json.loads(self.to_json())
 
+        del ret["_id"]
         del ret["_binary"]
         return ret
 
@@ -164,7 +185,9 @@ class RefFile(mongoengine.Document):
         """返回到界面的 Json"""
         ret = json.loads(self.to_json())
 
+        del ret["_id"]
         del ret["_binary"]
+
         return ret
 
 # -------------------------------------------------------------------------

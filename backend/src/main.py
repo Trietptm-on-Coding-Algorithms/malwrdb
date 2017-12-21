@@ -93,6 +93,123 @@ class TestIt(Resource):
 # -------------------------------------------------------------------------
 
 
+class Action(Resource):
+    def get(self):
+        print("-" * 100)
+        ret = self._get()
+        print(ret)
+        print("+" * 100)
+        return ret
+
+    def _get(self):
+        try:
+            action = request.args.get("action", None)
+            if not action:
+                return "no action provided!"
+
+            if action == "get_refGroupList":
+                return self.get_refGroupList()
+
+            elif action == "get_topRefDirs":
+                return self.get_topRefDirs()
+
+            elif action == "get_subRefDirs":
+                return self.get_subRefDirs()
+
+            elif action == "get_subSamples":
+                return self.get_subSamples()
+
+            elif action == "get_subRefFiles":
+                return self.get_subRefFiles()
+
+            else:
+                return "invalid action: %s" % action
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return "exception!"
+
+    def get_refGroupList(self):
+        # get all groups
+        ret = []
+        for group in RefGroup.objects():
+            ret.append(group.json_ui())
+        return ret
+
+    def get_topRefDirs(self):
+        # get top RefDir by group_id
+        group_id = request.args.get("group_id", None)
+        if not group_id:
+            return "no group_id provided!"
+
+        q_group = RefGroup.objects(group_id=group_id)
+        if q_group.count() != 1:
+            return "no or too many group by group_id"
+        group = q_group[0]
+
+        q_dir = RefDir.objects(refGroup=group, parnetRefDir=None)
+        if q_dir.count() != 1:
+            return "no or too many top RefDir by group_id"
+
+        # return a list, instead of standalone obj, to make it easier for frontend
+        return [q_dir[0].json_ui()]
+
+    def get_subRefDirs(self):
+        # get sub RefDir list by parent RefDir id
+        ref_dir_id = request.args.get("refDir_id", None)
+        if not ref_dir_id:
+            return "no refDir id provided!"
+
+        q_refDir = RefDir.objects(pk=ref_dir_id)
+        if q_refDir.count() != 1:
+            return "no or too many refDir by ref_dir_id"
+        ref_dir_cur = q_refDir[0]
+
+        ret =[]
+        for ref_dir in RefDir.objects(parnetRefDir=ref_dir_cur):
+            ret.append(ref_dir.json_ui())
+        return ret
+
+    def get_subSamples(self):
+        # get sub Sample list by parent refDir id
+        ref_dir_id = request.args.get("refDir_id", None)
+        if not ref_dir_id:
+            return "no refDir id provided!"
+
+        q_refDir = RefDir.objects(pk=ref_dir_id)
+        if q_refDir.count() != 1:
+            return "no or too many refDir by ref_dir_id"
+        ref_dir_cur = q_refDir[0]
+
+        ret = []
+        for sample_belongto in SampleBelongTo.objects(refDir=ref_dir_cur):
+            q_sample = Sample.objects(pk=sample_belongto.sample_id)
+            if q_sample.count() != 1:
+                return "no or too many sample by sample_id"
+            ret.append(q_sample[0].json_ui())
+        return ret
+
+    def get_subRefFiles(self):
+        # get sub RefFile list by parent refDir id
+        ref_dir_id = request.args.get("refDir_id", None)
+        if not ref_dir_id:
+            return "no refDir id provided!"
+
+        q_refDir = RefDir.objects(pk=ref_dir_id)
+        if q_refDir.count() != 1:
+            return "no or too many refDir by ref_dir_id"
+        ref_dir_cur = q_refDir[0]
+
+        ret = []
+        for file_belongto in RefFileBelongTo.objects(refDir=ref_dir_cur):
+            q_refFile = RefFile.objects(pk=file_belongto.ref_file_id)
+            if q_refFile.count() != 1:
+                return "no or too many refFile by ref_file_id"
+            ret.append(q_refFile[0].json_ui())
+        return ret
+
+
 class SampleSimpleAction(Resource):
     """针对样本的各种简单行为"""
     def get(self):
@@ -128,13 +245,13 @@ class SampleSimpleAction(Resource):
         return Sample.objects.count()
 
     def _list(self):
-        # 列表
+        # list of refGroup, sorted by update_time
         type_ = request.args.get("type", "all")
         author = request.args.get("author", "all")
 
         ret = []
-        for sample in Sample.objects():
-            ret.append(sample.json_ui())
+        for group in RefGroup.objects():
+            ret.append(group.json_ui())
         return ret
 
     def _check_exists(self):
@@ -157,8 +274,6 @@ class SampleUpload(Resource):
 
     def _post(self):
         try:
-            assert request.method == "POST"
-
             file = request.files['file']
             if not file:
                 return "no file uploaded!"
@@ -356,6 +471,8 @@ class SampleUpload(Resource):
 api.add_resource(TodoList, '/todos/')
 api.add_resource(Todo, '/todos/<todo_id>/')
 api.add_resource(TestIt, '/test/')
+
+api.add_resource(Action, '/action/')
 
 api.add_resource(SampleSimpleAction, '/sample/action/')
 api.add_resource(SampleUpload, '/sample/upload/')

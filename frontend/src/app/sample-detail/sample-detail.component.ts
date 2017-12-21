@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { SharedDataService } from '../services/shared-data.service';
-import { Sample } from '../models/sample';
+import { Sample } from '../models/models';
 
 @Component({
   selector: 'sample-detail',

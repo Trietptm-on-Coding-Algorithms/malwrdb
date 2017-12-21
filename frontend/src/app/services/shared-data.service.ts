@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Sample } from '../models/sample'
+import { Sample } from '../models/models'
 
 @Injectable()
 export class SharedDataService {
