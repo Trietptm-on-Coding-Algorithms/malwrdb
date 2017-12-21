@@ -1,10 +1,10 @@
 <button mat-raised-button color="primary" (click)="showSuccess()">测试</button>
 
 
-<!-- 选择目录, 目录中文件作为样本组 -->
-<div colspan="1" rowspan="1" *ngIf="!group_uploader.queue.length">
+<!-- 选择目录, 目录中文件作为样本组 *ngIf="!group_uploader.queue.length"-->
+<div colspan="1" rowspan="1">
   <h3>选择目录(样本及其衍生物)</h3>
-  <input type="file" ng2FileSelect webkitdirectory [uploader]="group_uploader" />
+  <input type="file" ng2DirSelect webkitdirectory [uploader]="group_uploader" />
 </div>
 <!-- 目录中的文件列表 -->
 <div colspan="3" rowspan="1">
@@ -25,7 +25,7 @@
       <tbody>
         <tr *ngFor="let item of group_uploader.queue">
           <!-- <td><strong>{{ item?.file?.name }}</strong></td> -->
-          <td><strong>{{ item?.relativePath }}</strong></td>
+          <td><strong>{{ item?.some?.webkitRelativePath }}</strong></td>
           <td nowrap>{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
           <td>
             <mat-progress-bar color="primary" mode="determinate" [value]="item.progress"></mat-progress-bar>

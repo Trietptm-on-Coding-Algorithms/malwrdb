@@ -20,8 +20,6 @@ export class FileItem {
   public index: number = void 0;
   public _xhr: XMLHttpRequest;
   public _form: any;
-  // 相对路径
-  public relativePath: string;
 
   protected uploader: FileUploader;
   protected some: File;
@@ -38,9 +36,6 @@ export class FileItem {
       this.alias = uploader.options.itemAlias || 'file';
     }
     this.url = uploader.options.url;
-    if ("webkitRelativePath" in this._file){
-      this.relativePath = this._file.webkitRelativePath;
-    }
   }
 
   public upload(): void {
