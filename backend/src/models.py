@@ -15,13 +15,11 @@ class LogLine(mongoengine.Document):
     """
     meta = {'collection': "log_line"}
 
-    file = mongoengine.StringField()                     # 代码文件
-    level = mongoengine.IntField()                       # 级别
-    info = mongoengine.StringField()                     # 信息
-    time = mongoengine.DateTimeField()                   # 时间
+    file = mongoengine.StringField()
+    level = mongoengine.IntField()
+    info = mongoengine.StringField()
 
-    def clean(self):
-        self.time = datetime.now()
+    add_time = mongoengine.DateTimeField(default=datetime.now())
 
 
 class RefGroup(mongoengine.Document):
@@ -31,6 +29,12 @@ class RefGroup(mongoengine.Document):
     meta = {'collection': "ref_group"}
 
     group_id = mongoengine.StringField(required=True)
+
+    add_time = mongoengine.DateTimeField(default=datetime.now())
+    update_time = mongoengine.DateTimeField()
+
+    def clean(self):
+        self.update_time = datetime.now()
 
 
 class RefDir(mongoengine.Document):
@@ -43,6 +47,9 @@ class RefDir(mongoengine.Document):
 
     refGroup = mongoengine.ReferenceField('RefGroup', required=True)
     parnetRefDir = mongoengine.ReferenceField('self')
+
+    def clean(self):
+        self.refGroup.save()  # update it's update_time
 
 
 class SampleBelongTo(mongoengine.Document):
@@ -60,6 +67,9 @@ class SampleBelongTo(mongoengine.Document):
 
     sample_name = mongoengine.StringField(required=True)
     sample_relative_path = mongoengine.StringField()
+
+    def clean(self):
+        self.refGroup.save()  # update it's update_time
 
 
 class Sample(mongoengine.Document):
@@ -118,6 +128,9 @@ class RefFileBelongTo(mongoengine.Document):
 
     file_name = mongoengine.StringField(required=True)
     file_relative_path = mongoengine.StringField()
+
+    def clean(self):
+        self.refGroup.save()  # update it's update_time
 
 
 class RefFile(mongoengine.Document):
