@@ -8,6 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // 第三方模块
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrModule } from 'ngx-toastr';
 
 // 咱自己的模块
 import { UploadModule } from './sample-upload/upload'
@@ -30,12 +31,13 @@ import { TestComponent } from './test';
 import { AboutComponent } from './about';
 import { NoContentComponent } from './no-content';
 
-//
+// 自己定义的描述符
 import { XLargeDirective } from './home/x-large';
 
 // 自己定义的服务
 import { ServerDataService } from './services/server-data.service';
 import { SharedDataService } from './services/shared-data.service';
+import { UtilService } from './services/util.service';
 
 import '../styles/styles.scss';
 import '../styles/headings.css';
@@ -83,6 +85,11 @@ type StoreType = {
     UploadModule,
     MaterialComponentModule,
     NgbModule.forRoot(),
+    ToastrModule.forRoot({
+      timeOut: 3000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: false,
+    }),
     RouterModule.forRoot(ROUTES, {
       useHash: Boolean(history.pushState) === false,
       preloadingStrategy: PreloadAllModules
@@ -103,6 +110,7 @@ type StoreType = {
     APP_PROVIDERS,
     ServerDataService,
     SharedDataService,
+    UtilService,
   ]
 })
 export class AppModule { }

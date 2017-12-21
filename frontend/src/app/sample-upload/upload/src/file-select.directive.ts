@@ -32,14 +32,14 @@ export class FileSelectDirective {
     let filters = this.getFilters();
 
     if (files.length <= 100){
-
-      // console.log(this.element)
-      // console.log(files)
-
-      console.log("选中文件个数:" + files.length)
-      for(let file of files){
-        console.log(file.name + " - " + file.webkitRelativePath)
-      }
+      //
+      // // console.log(this.element)
+      // // console.log(files)
+      //
+      // console.log("选中文件个数:" + files.length)
+      // for(let file of files){
+      //   console.log(file.name + " - " + file.webkitRelativePath)
+      // }
 
       this.uploader.addToQueue(files, options, filters);
       this.onFileSelected.emit(files);

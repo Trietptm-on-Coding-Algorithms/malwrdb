@@ -149,16 +149,23 @@ class SampleUpload(Resource):
     """样本上传"""
     def post(self):
         try:
+            import pprint
+            # pprint.pprint(dir(request))
+            # print(request.headers)
+            print(request.files)
+            print(request.form)
+            print(request.args)
             file = request.files['file']
             if file:
+                # pprint.pprint(dir(file))
                 # print(type(file))         -> werkzeug.datastructures.FileStorage
-                # print(file.name)          -> 'file'
-                # print(file.filename)      -> '生成器.exe'
+                print(file.name)          # -> 'file'
+                print(file.filename)      # -> '生成器.exe'
                 # print(type(file.stream))  -> `tempfile.SpooledTemporaryFile`
                 # print(file.stream.read()) -> 实际的数据
                 # file.save('f.tmp')        -> 保存到本地磁盘
-                binary = file.stream.read()
-                sample = sample_check_exist_or_insert(binary)
+                # binary = file.stream.read()
+                # sample = sample_check_exist_or_insert(binary)
                 return "save success"
             else:
                 return "invalid file"
