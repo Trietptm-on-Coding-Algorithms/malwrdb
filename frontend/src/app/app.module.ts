@@ -46,10 +46,12 @@ import '../styles/headings.css';
 import { SampleUploadComponent } from './sample-upload/sample-upload.component';
 import { SampleListComponent } from './sample-list/sample-list.component';
 import { SampleDetailComponent } from './sample-detail/sample-detail.component';
-import { RefGroupComponent } from './sample-list/sub-components/ref-group.component'
-import { RefDirComponent } from './sample-list/sub-components/ref-dir.component'
-import { RefFileComponent } from './sample-list/sub-components/ref-file.component'
-import { SampleComponent } from './sample-list/sub-components/sample.component'
+import { RefGroupComponent } from './sample-list/sub-components/ref-group.component';
+import { RefDirComponent } from './sample-list/sub-components/ref-dir.component';
+import { RefFileComponent } from './sample-list/sub-components/ref-file.component';
+import { SampleComponent } from './sample-list/sub-components/sample.component';
+import { AdminLogComponent } from './admin-log/admin-log.component';
+
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -82,6 +84,7 @@ type StoreType = {
       RefDirComponent,
       RefFileComponent,
       SampleComponent,
+      AdminLogComponent,
   ],
   /**
    * Import Angular's modules.

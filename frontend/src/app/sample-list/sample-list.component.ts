@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { MaterialComponentModule } from '../modules/material-component.module';
+import { PageEvent } from '@angular/material';
+
 import { ServerDataService } from '../services/server-data.service';
 import { SharedDataService } from '../services/shared-data.service';
 import { RefGroup, Sample } from '../models/models';
@@ -8,15 +11,29 @@ import { RefGroup, Sample } from '../models/models';
 import { RefGroupComponent } from './ref-group/ref-group.component';
 
 @Component({
-  selector: 'app-sample-list',
-  templateUrl: './sample-list.component.html',
+  selector: 'sample-list',
+  template: `
+  <div *ngFor="let group of showGroupList">
+      <ref-group [refGroup]="group"></ref-group>
+      <br/>
+  </div>
+
+  <mat-paginator [length]="allGroupLength"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="pageSizeOptions"
+                (page)="reload($event)">
+  </mat-paginator>
+  `,
   styleUrls: ['./sample-list.component.css']
 })
 export class SampleListComponent implements OnInit {
+    defaultPageSize = 10;
+    pageSizeOptions = [5, 10, 25, 100];
 
   is_updating: boolean = false;
 
-  group_list: RefGroup[];
+  showGroupList: RefGroup[];
+    allGroupLength: number;
 
   constructor(
     private _router: Router,
@@ -25,15 +42,15 @@ export class SampleListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
+      this.getGroupList();
   }
 
-
-  getGroupList(): void{
+  getGroupList(pageSize: number=this.defaultPageSize, pageIndex: number=1): void{
     this.is_updating = true;
-    this._svrdata.getGroupList().subscribe(
+    this._svrdata.getGroupList(pageSize, pageIndex).subscribe(
       v => {
-        this.group_list = v;
+          this.showGroupList = v["group_list"];
+          this.allGroupLength = v["group_length"];
         this.is_updating = false;
       },
       e => {
@@ -44,4 +61,8 @@ export class SampleListComponent implements OnInit {
       }
     );
   }
+    // reload groupList
+    reload(evt: any) {
+        this.getGroupList(evt.pageSize, evt.pageIndex);
+    }
 }

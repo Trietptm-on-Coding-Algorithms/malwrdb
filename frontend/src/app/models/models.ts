@@ -15,7 +15,7 @@ class RefFile{
 
 class Sample {
     sample_name: string;
-    smaple_file_size: number;
+    smaple_size: number;
 
     md5: string;
     sha1: string;
@@ -23,6 +23,11 @@ class Sample {
     sha256: string;
 }
 
+class LogLine{
+    file: string;
+    info: string;
+    level: string;
+}
 
 
-export { RefGroup, RefDir, RefFile, Sample };
+export { RefGroup, RefDir, RefFile, Sample, LogLine };

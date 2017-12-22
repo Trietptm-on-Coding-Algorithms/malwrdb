@@ -6,9 +6,9 @@ import { ServerDataService } from '../../services/server-data.service';
 @Component({
   selector: 'ref-file',
   template: `
-    <p>
-        {{ refFile.md5 }}
-    </p>
+  <a href="#" (click)="clickFile()">
+      {{ refFile.file_name }}
+  </a>
   `
 })
 
@@ -18,5 +18,9 @@ export class RefFileComponent implements OnInit {
 
   ngOnInit() {
     // get data from server
+  }
+
+  clickFile(){
+      console.log("what?");
   }
 }

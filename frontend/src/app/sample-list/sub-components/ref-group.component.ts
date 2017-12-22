@@ -20,7 +20,6 @@ export class RefGroupComponent implements OnInit {
   constructor(private _svrdata: ServerDataService) { }
 
   ngOnInit(){
-    console.log("init group component");
       this._svrdata.getTopRefDir(this.refGroup.group_id).subscribe(
         v => {
             this.topRefDirList = v;

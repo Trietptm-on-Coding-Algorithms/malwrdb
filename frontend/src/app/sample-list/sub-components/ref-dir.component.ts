@@ -10,24 +10,24 @@ import { SampleComponent } from './sample.component';
   selector: 'ref-dir',
 
   template: `
-    <div *ngIf="subRefDirs">
-        <div *ngFor="let dir of subRefDirs">
-            <p>{{ dir.dir_name }}</p>
-            <ref-dir [refDir]="dir"></ref-dir>
-        </div>
-    </div>
-    <div *ngIf="subSamples">
-        <div *ngFor="let sample of subSamples">
-            <p>{{ sample.md5 }}</p>
-            <sample [sample]="sample"></sample>
-        </div>
-    </div>
-    <div *ngIf="subRefFiles">
-        <div *ngFor="let file of subRefFiles">
-            <p>{{ file.md5 }}</p>
-            <ref-file [refFile]="file"></ref-file>
-        </div>
-    </div>
+  <span>{{ refDir.dir_name }}</span>
+  <div style="margin-left: 40px">
+      <div *ngIf="subRefDirs">
+          <div *ngFor="let dir of subRefDirs">
+              <ref-dir [refDir]="dir"></ref-dir>
+          </div>
+      </div>
+      <div *ngIf="subSamples">
+          <div *ngFor="let sample of subSamples">
+              <sample [sample]="sample"></sample>
+          </div>
+      </div>
+      <div *ngIf="subRefFiles">
+          <div *ngFor="let file of subRefFiles">
+              <ref-file [refFile]="file"></ref-file>
+          </div>
+      </div>
+  </div>
   `
 })
 

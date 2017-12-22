@@ -3,6 +3,8 @@
 
 # -------------------------------------------------------------------------
 
+import traceback
+
 from flask import Flask, request
 from flask_cors import CORS
 from flask_restful import reqparse, abort, Api, Resource
@@ -33,79 +35,85 @@ db = MongoEngine(app)
 
 # -------------------------------------------------------------------------
 
+from log import log
+
+
+def warn(info):
+    log(__file__, info, "warn")
+
+
+def error(info):
+    log(__file__, info, "error")
+
+
+def debug(info):
+    log(__file__, info, "debug")
+
+
+# -------------------------------------------------------------------------
+
 # Restful
 api = Api(app)
-
-TODOS = {
-    'todo1': {'task': 'build an API'},
-    'todo2': {'task': '?????'},
-    'todo3': {'task': 'profit!'},
-}
-
-
-def abort_if_todo_doesnt_exist(todo_id):
-    if todo_id not in TODOS:
-        abort(404, message="Todo {} doesn't exist".format(todo_id))
-
-parser = reqparse.RequestParser()
-parser.add_argument('task')
-
-
-# Todo
-# shows a single todo item and lets you delete a todo item
-class Todo(Resource):
-    def get(self, todo_id):
-        abort_if_todo_doesnt_exist(todo_id)
-        return TODOS[todo_id]
-
-    def delete(self, todo_id):
-        abort_if_todo_doesnt_exist(todo_id)
-        del TODOS[todo_id]
-        return '', 204
-
-    def put(self, todo_id):
-        args = parser.parse_args()
-        task = {'task': args['task']}
-        TODOS[todo_id] = task
-        return task, 201
-
-
-# TodoList
-# shows a list of all todos, and lets you POST to add new tasks
-class TodoList(Resource):
-    def get(self):
-        return TODOS
-
-    def post(self):
-        args = parser.parse_args()
-        todo_id = int(max(TODOS.keys()).lstrip('todo')) + 1
-        todo_id = 'todo%i' % todo_id
-        TODOS[todo_id] = {'task': args['task']}
-        return TODOS[todo_id], 201
-
-## 测试
-class TestIt(Resource):
-    def get(self):
-        print("test it")
-        print(request.args)
-        return TODOS
 
 # -------------------------------------------------------------------------
 
 
-class Action(Resource):
+class LogLineAction(Resource):
     def get(self):
-        print("-" * 100)
+        print("-" * 30 + "LogLine Action" + "-" * 30)
         ret = self._get()
         print(ret)
-        print("+" * 100)
+        print("+" * 30 + "LogLine Action" + "+" * 30)
         return ret
 
     def _get(self):
         try:
             action = request.args.get("action", None)
             if not action:
-                return "no action provided!"
+                raise Exception("no action provided!")
+
+            print("action: " + action)
+
+            if action == "get_logLines":
+                return self.get_logLines()
+
+            elif action == "clearLogLines":
+                return self.clearLogLines()
+
+            else:
+                raise Exception("invalid action: %s" % action)
+
+        except Exception as e:
+            error(traceback.format_exc())
+            return "exception!"
+
+    def get_logLines(self):
+        # get log Lines
+        ret = []
+        for log in LogLine.objects.order_by("-add_time"):
+            ret.append(log.json_ui())
+        return ret
+
+    def clearLogLines(self):
+        # clear logLines
+        LogLine.drop_collection()
+        return "success"
+
+
+class Action(Resource):
+    # some actions for group/sample/file
+    def get(self):
+        print("-" * 30 + "Action" + "-" * 30)
+        ret = self._get()
+        print(ret)
+        print("+" * 30 + "Action" + "+" * 30)
+        return ret
+
+    def _get(self):
+        try:
+            action = request.args.get("action", None)
+            if not action:
+                raise Exception("no action provided!")
 
             if action == "get_refGroupList":
                 return self.get_refGroupList()
@@ -123,34 +131,44 @@ class Action(Resource):
                 return self.get_subRefFiles()
 
             else:
-                return "invalid action: %s" % action
+                raise Exception("invalid action: %s" % action)
 
         except Exception as e:
-            import traceback
-            traceback.print_exc()
+            error(traceback.format_exc())
             return "exception!"
 
     def get_refGroupList(self):
         # get all groups
-        ret = []
-        for group in RefGroup.objects():
-            ret.append(group.json_ui())
+        pageSize = request.args.get("pageSize", None)
+        pageIndex = request.args.get("pageIndex", None)
+        if not pageSize or not pageIndex:
+            raise Exception("no pageSize or pageIndex provided!")
+        pageSize = int(pageSize)
+        pageIndex = int(pageIndex)
+
+        ret = {"group_length": RefGroup.objects.count()}
+
+        group_list = []
+        for group in RefGroup.objects.order_by("-update_time").skip(pageIndex*pageSize).limit(pageSize):
+            group_list.append(group.json_ui())
+        ret["group_list"] = group_list
+
         return ret
 
     def get_topRefDirs(self):
         # get top RefDir by group_id
         group_id = request.args.get("group_id", None)
         if not group_id:
-            return "no group_id provided!"
+            raise Exception("no group_id provided!")
 
         q_group = RefGroup.objects(group_id=group_id)
         if q_group.count() != 1:
-            return "no or too many group by group_id"
+            raise Exception("no or too many group by group_id")
         group = q_group[0]
 
         q_dir = RefDir.objects(refGroup=group, parnetRefDir=None)
         if q_dir.count() != 1:
-            return "no or too many top RefDir by group_id"
+            raise Exception("no or too many top RefDir by group_id")
 
         # return a list, instead of standalone obj, to make it easier for frontend
         return [q_dir[0].json_ui()]
@@ -159,11 +177,11 @@ class Action(Resource):
         # get sub RefDir list by parent RefDir id
         ref_dir_id = request.args.get("refDir_id", None)
         if not ref_dir_id:
-            return "no refDir id provided!"
+            raise Exception("no refDir id provided!")
 
         q_refDir = RefDir.objects(pk=ref_dir_id)
         if q_refDir.count() != 1:
-            return "no or too many refDir by ref_dir_id"
+            raise Exception("no or too many refDir by ref_dir_id")
         ref_dir_cur = q_refDir[0]
 
         ret =[]
@@ -175,38 +193,42 @@ class Action(Resource):
         # get sub Sample list by parent refDir id
         ref_dir_id = request.args.get("refDir_id", None)
         if not ref_dir_id:
-            return "no refDir id provided!"
+            raise Exception("no refDir id provided!")
 
         q_refDir = RefDir.objects(pk=ref_dir_id)
         if q_refDir.count() != 1:
-            return "no or too many refDir by ref_dir_id"
+            raise Exception("no or too many refDir by ref_dir_id")
         ref_dir_cur = q_refDir[0]
 
         ret = []
         for sample_belongto in SampleBelongTo.objects(refDir=ref_dir_cur):
             q_sample = Sample.objects(pk=sample_belongto.sample_id)
             if q_sample.count() != 1:
-                return "no or too many sample by sample_id"
-            ret.append(q_sample[0].json_ui())
+                raise Exception("no or too many sample by sample_id")
+            sample = q_sample[0].json_ui()
+            sample["sample_name"] = sample_belongto.sample_name
+            ret.append(sample)
         return ret
 
     def get_subRefFiles(self):
         # get sub RefFile list by parent refDir id
         ref_dir_id = request.args.get("refDir_id", None)
         if not ref_dir_id:
-            return "no refDir id provided!"
+            raise Exception("no refDir id provided!")
 
         q_refDir = RefDir.objects(pk=ref_dir_id)
         if q_refDir.count() != 1:
-            return "no or too many refDir by ref_dir_id"
+            raise Exception("no or too many refDir by ref_dir_id")
         ref_dir_cur = q_refDir[0]
 
         ret = []
         for file_belongto in RefFileBelongTo.objects(refDir=ref_dir_cur):
             q_refFile = RefFile.objects(pk=file_belongto.ref_file_id)
             if q_refFile.count() != 1:
-                return "no or too many refFile by ref_file_id"
-            ret.append(q_refFile[0].json_ui())
+                raise Exception("no or too many refFile by ref_file_id")
+            ref_file = q_refFile[0].json_ui()
+            ref_file["file_name"] = file_belongto.file_name
+            ret.append(ref_file)
         return ret
 
 
@@ -266,21 +288,21 @@ class SampleSimpleAction(Resource):
 class SampleUpload(Resource):
     """样本上传"""
     def post(self):
-        print("-" * 100)
+        print("-" * 30 + "Sample Upload" + "-" * 30)
         ret = self._post()
         print(ret)
-        print("+" * 100)
+        print("+" * 30 + "Sample Upload" + "+" * 30)
         return ret
 
     def _post(self):
         try:
             file = request.files['file']
             if not file:
-                return "no file uploaded!"
+                raise Exception("no file uploaded!")
 
             type_ =  request.args.get("type", None)
             if not type_:
-                return "no upload type provided!"
+                raise Exception("no upload type provided!")
 
             if type_ == "sample_group":
                 return self.upload_by_group(file)
@@ -292,7 +314,7 @@ class SampleUpload(Resource):
                 return self.upload_by_parent(file)
 
             else:
-                return "invalid upload type: %s" % type_
+                raise Exception("invalid upload type: %s" % type_)
             """
             import pprint
             # pprint.pprint(dir(request))
@@ -316,20 +338,19 @@ class SampleUpload(Resource):
                 return "invalid file"
             """
         except Exception as e:
-            import traceback
-            traceback.print_exc()
+            error(traceback.format_exc())
             return "exception!"
 
     def upload_by_group(self, file_):
         group_id = request.args.get("group_id", None)
         relative_path = request.args.get("relative_path", None)
         if not group_id or not relative_path:
-            return "invalid args!"
+            raise Exception("invalid args!")
 
         # check if group_id already exists
         q_refGroup = RefGroup.objects(group_id=group_id)
         if q_refGroup.count() > 1:
-            return "group with same group_id more than 1, error!"
+            raise Exception("group with same group_id more than 1, error!")
 
         # get refGroup and refDir
         if q_refGroup.count() == 0:
@@ -337,7 +358,7 @@ class SampleUpload(Resource):
             tar_refGroup = RefGroup()
             tar_refGroup.group_id = group_id
             tar_refGroup.save()
-            print("create tar_refGroup with group_id: %s" % group_id)
+            debug("create tar_refGroup with group_id: %s" % group_id)
             dir_str_list = path_to_dirs(relative_path)
             tar_refDir = None
             for index, dir_str in enumerate(dir_str_list):
@@ -349,8 +370,7 @@ class SampleUpload(Resource):
                     dir_tmp.parnetRefDir = tar_refDir
                 dir_tmp.save()
                 tar_refDir = dir_tmp
-                print(dir_tmp.refGroup)
-                print("(1st)create dir with name: %s" % dir_str)
+                debug("(1st)create dir with name: %s" % dir_str)
         else:
             # already has group, get target dir
             tar_refGroup = q_refGroup[0]
@@ -361,13 +381,13 @@ class SampleUpload(Resource):
                 if index == 0:
                     q = RefDir.objects(refGroup=tar_refGroup, parnetRefDir=None)
                     if q.count() != 1:
-                        return "get top dir of file fail!"
+                        raise Exception("get top dir of file fail!")
                     dir_tmp = q[0]
                     tar_refDir = dir_tmp
                 else:
                     q = RefDir.objects(refGroup=tar_refGroup, parnetRefDir=dir_tmp, dir_name=dir_str)
                     if q.count() > 1:
-                        return "get dir of file fail!"
+                        raise Exception("get dir of file fail!")
                     if q.count() == 1:
                         dir_tmp = q[0]
                         tar_refDir = dir_tmp
@@ -380,7 +400,7 @@ class SampleUpload(Resource):
                         dir_tmp.parnetRefDir = tar_refDir
                         dir_tmp.save()
                         tar_refDir = dir_tmp
-                        print("create dir with name: %s" % dir_str)
+                        debug("create dir with name: %s" % dir_str)
 
         assert tar_refGroup and tar_refDir
 
@@ -393,7 +413,7 @@ class SampleUpload(Resource):
             # may store as EMPTY ref file if not already exists
             q_refFile = RefFile.objects(file_size=0)
             if q_refFile.count() > 1:
-                return "ref file with 0 size exists more than 1, error!: %s" % (relative_path)
+                raise Exception("ref file with 0 size exists more than 1, error!: %s" % (relative_path))
             if q_refFile.count() == 1:
                 ref_file = q_refFile[0]
             else:
@@ -403,20 +423,22 @@ class SampleUpload(Resource):
             link = RefFileBelongTo()
             link.refGroup = tar_refGroup
             link.refDir = tar_refDir
-            link.ref_file_id = ref_file.pk
+            link.ref_file_id = str(ref_file.pk)
             link.file_name = file_.filename
             link.file_relative_path = relative_path
-            return "save empty file as refFile"
+            link.save()
+            debug("save empty file as refFile")
+            return "upload success"
 
         import hashlib
         sha256 = hashlib.sha256(_binary).hexdigest()
         q_sample = Sample.objects(sha256=sha256)
         if q_sample.count() > 1:
-            return "sample with same sha256 exists and more than 1: %s - %d" % (sha256, q.count())
+            raise Exception("sample with same sha256 exists and more than 1: %s - %d" % (sha256, q.count()))
 
         if q_sample.count() == 1:
             if RefFile.objects(sha256=sha256).count() != 0:
-                return "file exists both as sample and ref file. error!: %s" % sha256
+                raise Exception("file exists both as sample and ref file. error!: %s" % sha256)
 
             # file only exists as sample -> update database
             sample = q_sample[0]
@@ -428,37 +450,36 @@ class SampleUpload(Resource):
             sample_belongto.sample_relative_path = relative_path
             sample_belongto.save()
             print("sample already exists, save sample_belongto")
-            return "sample already exists, save sample_belongto"
+            return "upload success"
 
         else:
             q_refFile = RefFile.objects(sha256=sha256)
             if q_refFile.count() > 1:
-                return "ref file with same sha256 exists and more than 1: %s - %d" % (sha256, q.count())
+                raise Exception("ref file with same sha256 exists and more than 1: %s - %d" % (sha256, q.count()))
 
             if q_refFile.count() == 1:
 
                 # file exists as ref file -> update database
                 ref_file = q_refFile[0]
-                print("refFile already exists")
+                debug("refFile already exists")
 
             else:
                 # file not exists in database -> store in database (as ref file) and update something
                 ref_file = RefFile()
                 ref_file._binary = _binary
                 ref_file.save()
-                print("save file as ref file")
+                debug("save file as ref file")
 
             ref_file_belongto = RefFileBelongTo()
             ref_file_belongto.refGroup = tar_refGroup
-            print(tar_refDir)
             ref_file_belongto.refDir = tar_refDir
             ref_file_belongto.ref_file_id = str(ref_file.pk)
             ref_file_belongto.file_name = file_.filename
             ref_file_belongto.file_relative_path = relative_path
             ref_file_belongto.save()
-            print("save ref_file_belongto")
+            debug("save ref_file_belongto")
 
-            return "save file as ref file"
+            return "upload success"
 
     def upload_standalone_sample(self, file_):
         pass
@@ -468,10 +489,7 @@ class SampleUpload(Resource):
 
 # -------------------------------------------------------------------------
 
-api.add_resource(TodoList, '/todos/')
-api.add_resource(Todo, '/todos/<todo_id>/')
-api.add_resource(TestIt, '/test/')
-
+api.add_resource(LogLineAction, '/logline/')
 api.add_resource(Action, '/action/')
 
 api.add_resource(SampleSimpleAction, '/sample/action/')

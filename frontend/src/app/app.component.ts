@@ -41,6 +41,10 @@ import { AppState } from './app.service';
         routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
         样本详情
       </a>
+      <a [routerLink]=" ['./logline'] "
+        routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
+        日志
+      </a>
 
       <!--
       <a [routerLink]=" ['./detail'] "

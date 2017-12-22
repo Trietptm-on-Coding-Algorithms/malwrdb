@@ -4,6 +4,7 @@ import { TestComponent } from './test';
 import { SampleUploadComponent } from './sample-upload';
 import { SampleListComponent } from './sample-list';
 import { SampleDetailComponent } from './sample-detail';
+import { AdminLogComponent } from './admin-log/admin-log.component';
 import { AboutComponent } from './about';
 import { NoContentComponent } from './no-content';
 
@@ -14,6 +15,7 @@ export const ROUTES: Routes = [
   { path: 'sample-upload',  component: SampleUploadComponent },
   { path: 'sample-list',  component: SampleListComponent },
   { path: 'sample-detail', component: SampleDetailComponent },
+  { path: 'logline', component: AdminLogComponent },
   { path: 'about', component: AboutComponent },
   { path: 'detail', loadChildren: './+detail#DetailModule'},
   { path: 'barrel', loadChildren: './+barrel#BarrelModule'},

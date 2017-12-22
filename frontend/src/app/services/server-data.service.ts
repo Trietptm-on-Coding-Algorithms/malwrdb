@@ -4,7 +4,7 @@ import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
 
-import { RefGroup, RefDir, RefFile, Sample } from '../models/models'
+import { LogLine, RefGroup, RefDir, RefFile, Sample } from '../models/models'
 
 @Injectable()
 export class ServerDataService {
@@ -21,10 +21,27 @@ export class ServerDataService {
   //         .map(res => res.json);
   // }
 
+    // -----------------------------------------------------------------------------------
+
+    // get logLine list
+    getLogLines(isWarn: boolean, isDebug: boolean): Observable<LogLine[]>{
+        return this._http.get(this.baseUrl + '/logline/?action=get_logLines&isWarn=' + isWarn + "&isDebug=" + isDebug)
+            .map(res => res.json());
+    }
+
+    // clear log lines
+    clearLogLines(){
+      // .subscribe() is necessary to truely "send" this request!!!
+        this._http.get(this.baseUrl + '/logline/?action=clearLogLines').subscribe(data => {
+            // console.log(data);
+        });
+    }
+
+    // -----------------------------------------------------------------------------------
 
     // get all RefGroup list
-    getGroupList(): Observable<RefGroup[]> {
-        return this._http.get(this.baseUrl + '/action/?action=get_refGroupList')
+    getGroupList(pageSize: number, pageIndex: number): Observable<RefGroup[]> {
+        return this._http.get(this.baseUrl + '/action/?action=get_refGroupList&pageSize=' + pageSize + "&pageIndex=" + pageIndex)
             .map(res => res.json());
     }
 
@@ -52,6 +69,8 @@ export class ServerDataService {
         return this._http.get(this.baseUrl + '/action/?action=get_subRefFiles&refDir_id=' + refDir_id)
             .map(res => res.json());
     }
+
+    // -----------------------------------------------------------------------------------
 
   doTest(): void {
 

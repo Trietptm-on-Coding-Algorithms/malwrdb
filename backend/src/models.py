@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+# -------------------------------------------------------------------------
+
 import json
 import hashlib
 from datetime import datetime
@@ -15,11 +17,18 @@ class LogLine(mongoengine.Document):
     """
     meta = {'collection': "log_line"}
 
-    file = mongoengine.StringField()
-    level = mongoengine.IntField()
-    info = mongoengine.StringField()
+    file = mongoengine.StringField(required=True)
+    level = mongoengine.StringField(required=True)
+    info = mongoengine.StringField(required=True)
 
     add_time = mongoengine.DateTimeField(default=datetime.now())
+
+    def json_ui(self):
+        ret = json.loads(self.to_json())
+
+        del ret["_id"]
+
+        return ret
 
 
 class RefGroup(mongoengine.Document):
@@ -132,6 +141,7 @@ class Sample(mongoengine.Document):
         ret = json.loads(self.to_json())
 
         del ret["_id"]
+        assert "_binary" in ret
         del ret["_binary"]
         return ret
 
@@ -186,7 +196,8 @@ class RefFile(mongoengine.Document):
         ret = json.loads(self.to_json())
 
         del ret["_id"]
-        del ret["_binary"]
+        if "_binary" in ret:
+            del ret["_binary"]
 
         return ret
 

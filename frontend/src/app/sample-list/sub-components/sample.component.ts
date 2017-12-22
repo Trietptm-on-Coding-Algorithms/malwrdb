@@ -7,7 +7,7 @@ import { ServerDataService } from '../../services/server-data.service';
   selector: 'sample',
   template: `
     <p>
-        {{ sample.md5 }}
+        {{ sample.sample_name }}
     </p>
   `
 })

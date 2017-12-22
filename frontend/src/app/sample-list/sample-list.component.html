@@ -1,7 +1,0 @@
-<h1>样本列表</h1>
-<button (click)="getGroupList()">获取列表</button>
-<div *ngIf="is_updating">正在获取...</div>
-<div *ngFor="let group of group_list">
-    <ref-group [refGroup]="group"></ref-group>
-    <br/>
-</div>
