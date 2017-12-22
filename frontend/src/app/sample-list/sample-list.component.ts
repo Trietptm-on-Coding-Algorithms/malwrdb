@@ -45,7 +45,7 @@ export class SampleListComponent implements OnInit {
       this.getGroupList();
   }
 
-  getGroupList(pageSize: number=this.defaultPageSize, pageIndex: number=1): void{
+  getGroupList(pageSize: number=this.defaultPageSize, pageIndex: number=0): void{
     this.is_updating = true;
     this._svrdata.getGroupList(pageSize, pageIndex).subscribe(
       v => {

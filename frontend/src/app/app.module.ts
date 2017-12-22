@@ -9,6 +9,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // 第三方模块
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrModule } from 'ngx-toastr';
+import { ContextMenuModule } from 'ngx-contextmenu';
 
 // 咱自己的模块
 import { UploadModule } from './sample-upload/upload'
@@ -96,6 +97,7 @@ type StoreType = {
     HttpModule,
     UploadModule,
     MaterialComponentModule,
+      ContextMenuModule.forRoot(),
     NgbModule.forRoot(),
     ToastrModule.forRoot({
       timeOut: 3000,

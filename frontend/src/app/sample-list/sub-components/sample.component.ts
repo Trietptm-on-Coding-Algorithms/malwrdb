@@ -1,4 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, ViewChild, OnInit, Input } from '@angular/core';
+
+import { ContextMenuModule, ContextMenuComponent } from 'ngx-contextmenu';
 
 import { Sample } from '../../models/models';
 import { ServerDataService } from '../../services/server-data.service';
@@ -6,17 +8,35 @@ import { ServerDataService } from '../../services/server-data.service';
 @Component({
   selector: 'sample',
   template: `
-    <p>
-        {{ sample.sample_name }}
-    </p>
+    <a href="" [contextMenu]="basicMenu">{{ sample.sample_name }}</a>
+
+    <!-- RightClick menu to select actions -->
+    <context-menu>
+      <ng-template contextMenuItem (execute)="convertToRefFile()">As reference file!</ng-template>
+      <ng-template contextMenuItem (execute)="renameSample()">Rename</ng-template>
+      <ng-template contextMenuItem (execute)="delSample()">Delete</ng-template>
+    </context-menu>
   `
 })
 
 export class SampleComponent implements OnInit {
   @Input() sample: Sample;
+    @ViewChild(ContextMenuComponent) basicMenu: ContextMenuComponent;
+
   constructor(private _svrdata: ServerDataService) { }
 
   ngOnInit() {
     // get data from server
   }
+    convertToRefFile() {
+        console.log("convert sample to file");
+    }
+
+    renameSample() {
+        console.log("rename sample");
+    }
+
+    delSample() {
+        console.log("del sample");
+    }
 }

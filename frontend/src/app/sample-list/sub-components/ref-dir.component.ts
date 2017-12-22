@@ -1,4 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, ViewChild, OnInit, Input } from '@angular/core';
+
+import { ContextMenuModule, ContextMenuComponent } from 'ngx-contextmenu';
 
 import { RefDir, Sample, RefFile } from '../../models/models';
 import { ServerDataService } from '../../services/server-data.service';
@@ -10,7 +12,16 @@ import { SampleComponent } from './sample.component';
   selector: 'ref-dir',
 
   template: `
-  <span>{{ refDir.dir_name }}</span>
+  <a href="" style="color: green" [contextMenu]="basicMenu">{{ refDir.dir_name }}</a>
+
+  <!-- RightClick menu to select actions -->
+  <context-menu>
+    <ng-template contextMenuItem (execute)="addFiles()">AddFiles</ng-template>
+    <ng-template contextMenuItem (execute)="renameDir()">Rename</ng-template>
+    <ng-template contextMenuItem (execute)="delDir()">Delete</ng-template>
+  </context-menu>
+
+  <!-- children items -->
   <div style="margin-left: 40px">
       <div *ngIf="subRefDirs">
           <div *ngFor="let dir of subRefDirs">
@@ -33,9 +44,12 @@ import { SampleComponent } from './sample.component';
 
 export class RefDirComponent implements OnInit {
   @Input() refDir: RefDir;
+    @ViewChild(ContextMenuComponent) basicMenu: ContextMenuComponent;
+
   subRefDirs: RefDir[];
   subSamples: Sample[];
   subRefFiles: RefFile[];
+
   constructor(private _svrdata: ServerDataService) { }
 
   ngOnInit() {
@@ -62,4 +76,16 @@ export class RefDirComponent implements OnInit {
           () => { }
       );
   }
+
+    addFiles(){
+        console.log("add files to dir");
+    }
+
+    renameDir(){
+        console.log("rename dir");
+    }
+
+    delDir(){
+        console.log("del dir");
+    }
 }
