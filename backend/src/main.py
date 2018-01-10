@@ -60,10 +60,10 @@ api = Api(app)
 
 class LogLineAction(Resource):
     def get(self):
-        print("-" * 30 + "LogLine Action" + "-" * 30)
+        print("-" * 30 + "LogLine Action Start" + "-" * 30)
         ret = self._get()
         print(ret)
-        print("+" * 30 + "LogLine Action" + "+" * 30)
+        print("+" * 30 + "LogLine Action End" + "+" * 30)
         return ret
 
     def _get(self):
@@ -103,10 +103,10 @@ class LogLineAction(Resource):
 class Action(Resource):
     # some actions for group/sample/file
     def get(self):
-        print("-" * 30 + "Action" + "-" * 30)
+        print("-" * 30 + "Action Start" + "-" * 30)
         ret = self._get()
         print(ret)
-        print("+" * 30 + "Action" + "+" * 30)
+        print("+" * 30 + "Action End" + "+" * 30)
         return ret
 
     def _get(self):
@@ -288,10 +288,10 @@ class SampleSimpleAction(Resource):
 class SampleUpload(Resource):
     """样本上传"""
     def post(self):
-        print("-" * 30 + "Sample Upload" + "-" * 30)
+        print("-" * 30 + "Sample Upload Start" + "-" * 30)
         ret = self._post()
         print(ret)
-        print("+" * 30 + "Sample Upload" + "+" * 30)
+        print("+" * 30 + "Sample Upload End" + "+" * 30)
         return ret
 
     def _post(self):
@@ -487,10 +487,47 @@ class SampleUpload(Resource):
     def upload_by_parent(self, file_):
         pass
 
+
+class RefFileActioin(Resource):
+    def post(self):
+        print("-" * 30 + "RefFile Action Start" + "-" * 30)
+        ret = self._post()
+        print(ret)
+        print("+" * 30 + "RefFile Action End" + "+" * 30)
+        return ret
+
+    def _post(self):
+        try:
+            args = json.loads(request.data)
+            if "action" not in args:
+                raise Exception("no action!")
+
+            action = args["action"]
+            if action == "analyzeAsSample":
+                return self.analyzeAsSample(args)
+
+            else:
+                raise Exception("invalid action: %s" % action)
+
+        except Exception as e:
+            error(traceback.format_exc())
+            return "exception:\n" + str(e)
+
+    def analyzeAsSample(self, args):
+        #
+        if "refFileId" not in args:
+            raise Exception("no ref file id provided!")
+
+        ref_file_id = args["refFileId"]
+        return "Analyzing...."
+
+
 # -------------------------------------------------------------------------
 
 api.add_resource(LogLineAction, '/logline/')
 api.add_resource(Action, '/action/')
+
+api.add_resource(RefFileActioin, '/reffile/')
 
 api.add_resource(SampleSimpleAction, '/sample/action/')
 api.add_resource(SampleUpload, '/sample/upload/')

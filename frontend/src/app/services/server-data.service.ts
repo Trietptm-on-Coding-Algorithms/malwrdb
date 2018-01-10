@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 // import { Http, Response } from '@angular/http';
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map'
 
 import { LogLine, RefGroup, RefDir, RefFile, Sample } from '../models/models'
 
@@ -20,15 +19,21 @@ export class ServerDataService {
 
     // get logLine list
     getLogLines(isWarn: boolean, isDebug: boolean): Observable<LogLine[]>{
-        return this._http.get<LogLine[]>(this.baseUrl + '/logline/?action=get_logLines&isWarn=' + isWarn + "&isDebug=" + isDebug);
+        let params = new HttpParams();
+        params = params.append("action", 'get_logLines');
+
+        params = params.append("isWarn", `${isWarn}`);
+        params = params.append("isDebug", `${isDebug}`);
+
+        return this._http.get<LogLine[]>(this.baseUrl + "/logline/", {params: params});
     }
 
     // clear log lines
     clearLogLines(){
       // .subscribe() is necessary to truely "send" this request!!!
-        this._http.get(this.baseUrl + '/logline/?action=clearLogLines').subscribe(data => {
-            // console.log(data);
-        });
+      this._http.post(this.baseUrl + "/logline/", {
+          "action": "clearLogLines",
+      }).subscribe();
     }
 
     // -----------------------------------------------------------------------------------
@@ -37,28 +42,54 @@ export class ServerDataService {
 
     // get all RefGroup list
     getGroupList(pageSize: number, pageIndex: number): Observable<RefGroup[]> {
-        return this._http.get<RefGroup[]>(this.baseUrl + '/action/?action=get_refGroupList&pageSize=' + pageSize + "&pageIndex=" + pageIndex);
+        let params = new HttpParams();
+        params = params.append("action", 'get_refGroupList');
+
+        params = params.append("pageSize", `${pageSize}`);
+        params = params.append("pageIndex", `${pageIndex}`);
+
+        return this._http.get<RefGroup[]>(this.baseUrl + "/action/", {params: params});
     }
 
   // get top refDir by group_id
     getTopRefDir(group_id: string): Observable<RefDir[]>{
-        return this._http.get<RefDir[]>(this.baseUrl + '/action/?action=get_topRefDirs&group_id=' + group_id);
+        let params = new HttpParams();
+        params = params.append("action", 'get_topRefDirs');
+
+        params = params.append("group_id", group_id);
+
+        return this._http.get<RefDir[]>(this.baseUrl + "/action/", {params: params});
     }
 
     // get sub RefDir by RefDirId
     getSubRefDirs(refDir_id: string): Observable<RefDir[]> {
-        return this._http.get<RefDir[]>(this.baseUrl + '/action/?action=get_subRefDirs&refDir_id=' + refDir_id);
+        let params = new HttpParams();
+        params = params.append("action", 'get_subRefDirs');
+
+        params = params.append("refDir_id", refDir_id);
+
+        return this._http.get<RefDir[]>(this.baseUrl + "/action/", {params: params});
     }
 
     // get sub Sample by RefDirId
     getSubSamples(refDir_id: string): Observable<Sample[]> {
-        return this._http.get<Sample[]>(this.baseUrl + '/action/?action=get_subSamples&refDir_id=' + refDir_id);
+        let params = new HttpParams();
+        params = params.append("action", 'get_subSamples');
+
+        params = params.append("refDir_id", refDir_id);
+
+        return this._http.get<Sample[]>(this.baseUrl + "/action/", {params: params});
     }
 
 
     // get sub refFile by RefDirId
     getSubRefFiles(refDir_id: string): Observable<RefFile[]>{
-        return this._http.get<RefFile[]>(this.baseUrl + '/action/?action=get_subRefFiles&refDir_id=' + refDir_id);
+        let params = new HttpParams();
+        params = params.append("action", 'get_subRefFiles');
+
+        params = params.append("refDir_id", refDir_id);
+
+        return this._http.get<RefFile[]>(this.baseUrl + "/action/", {params: params});
     }
 
     // -----------------------------------------------------------------------------------
@@ -67,7 +98,10 @@ export class ServerDataService {
 
     // analyze file as sample
     cmdAnalyzeSample(refFile_id: string){
-      this._http.get(this.baseUrl + '/action/?action=analyzeAsSample&refFileId=' + refFile_id).subscribe();
+        this._http.post(this.baseUrl + "/reffile/", {
+            "action": "analyzeAsSample",
+            "refFileId": refFile_id,
+        }).subscribe();
     }
 
     // -----------------------------------------------------------------------------------
