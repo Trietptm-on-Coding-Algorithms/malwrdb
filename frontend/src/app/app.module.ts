@@ -2,7 +2,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+// import { HttpModule } from '@angular/http';
+import { HttpClientModule } from "@angular/common/http";
 import { RouterModule, PreloadAllModules } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -94,7 +95,8 @@ type StoreType = {
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
-    HttpModule,
+    // HttpModule,
+    HttpClientModule,
     UploadModule,
     MaterialComponentModule,
       ContextMenuModule.forRoot(),

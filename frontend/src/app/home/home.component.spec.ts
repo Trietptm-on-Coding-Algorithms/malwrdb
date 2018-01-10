@@ -6,11 +6,11 @@ import {
   ComponentFixture
 } from '@angular/core/testing';
 import { Component } from '@angular/core';
-import {
-  BaseRequestOptions,
-  ConnectionBackend,
-  Http
-} from '@angular/http';
+// import {
+//   BaseRequestOptions,
+//   ConnectionBackend,
+//   Http
+// } from '@angular/http';
 import { MockBackend } from '@angular/http/testing';
 
 /**
@@ -28,27 +28,27 @@ describe(`Home`, () => {
    * async beforeEach.
    */
   beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [HomeComponent],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        BaseRequestOptions,
-        MockBackend,
-        {
-          provide: Http,
-          useFactory: (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) => {
-            return new Http(backend, defaultOptions);
-          },
-          deps: [MockBackend, BaseRequestOptions]
-        },
-        AppState,
-        Title,
-      ]
-    })
-    /**
-     * Compile template and css.
-     */
-    .compileComponents();
+    // TestBed.configureTestingModule({
+    //   declarations: [HomeComponent],
+    //   schemas: [NO_ERRORS_SCHEMA],
+    //   providers: [
+    //     BaseRequestOptions,
+    //     MockBackend,
+    //     {
+    //       provide: Http,
+    //       useFactory: (backend: ConnectionBackend, defaultOptions: BaseRequestOptions) => {
+    //         return new Http(backend, defaultOptions);
+    //       },
+    //       deps: [MockBackend, BaseRequestOptions]
+    //     },
+    //     AppState,
+    //     Title,
+    //   ]
+    // })
+    // /**
+    //  * Compile template and css.
+    //  */
+    // .compileComponents();
   }));
 
   /**

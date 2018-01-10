@@ -5,7 +5,7 @@ import {
   TestBed
 } from '@angular/core/testing';
 import { Component } from '@angular/core';
-import { BaseRequestOptions, Http } from '@angular/http';
+// import { BaseRequestOptions, Http } from '@angular/http';
 import { By } from '@angular/platform-browser';
 import { MockBackend } from '@angular/http/testing';
 

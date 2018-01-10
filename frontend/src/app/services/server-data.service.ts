@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+// import { Http, Response } from '@angular/http';
+import { HttpClient } from "@angular/common/http";
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
@@ -11,22 +12,15 @@ export class ServerDataService {
 
   baseUrl: string = 'http://127.0.0.1:5000'
 
-  constructor(private _http: Http) {
+  constructor(private _http: HttpClient) {
 
   }
-
-  // 获取样本数目
-  // getSampleCount(): number{
-  //     this._http.get(this.baseUrl + '/sample/action/?action=count&type=all&author=all')
-  //         .map(res => res.json);
-  // }
 
     // -----------------------------------------------------------------------------------
 
     // get logLine list
     getLogLines(isWarn: boolean, isDebug: boolean): Observable<LogLine[]>{
-        return this._http.get(this.baseUrl + '/logline/?action=get_logLines&isWarn=' + isWarn + "&isDebug=" + isDebug)
-            .map(res => res.json());
+        return this._http.get<LogLine[]>(this.baseUrl + '/logline/?action=get_logLines&isWarn=' + isWarn + "&isDebug=" + isDebug);
     }
 
     // clear log lines
@@ -43,33 +37,28 @@ export class ServerDataService {
 
     // get all RefGroup list
     getGroupList(pageSize: number, pageIndex: number): Observable<RefGroup[]> {
-        return this._http.get(this.baseUrl + '/action/?action=get_refGroupList&pageSize=' + pageSize + "&pageIndex=" + pageIndex)
-            .map(res => res.json());
+        return this._http.get<RefGroup[]>(this.baseUrl + '/action/?action=get_refGroupList&pageSize=' + pageSize + "&pageIndex=" + pageIndex);
     }
 
   // get top refDir by group_id
     getTopRefDir(group_id: string): Observable<RefDir[]>{
-        return this._http.get(this.baseUrl + '/action/?action=get_topRefDirs&group_id=' + group_id)
-            .map(res => res.json());
+        return this._http.get<RefDir[]>(this.baseUrl + '/action/?action=get_topRefDirs&group_id=' + group_id);
     }
 
     // get sub RefDir by RefDirId
     getSubRefDirs(refDir_id: string): Observable<RefDir[]> {
-        return this._http.get(this.baseUrl + '/action/?action=get_subRefDirs&refDir_id=' + refDir_id)
-            .map(res => res.json());
+        return this._http.get<RefDir[]>(this.baseUrl + '/action/?action=get_subRefDirs&refDir_id=' + refDir_id);
     }
 
     // get sub Sample by RefDirId
     getSubSamples(refDir_id: string): Observable<Sample[]> {
-        return this._http.get(this.baseUrl + '/action/?action=get_subSamples&refDir_id=' + refDir_id)
-            .map(res => res.json());
+        return this._http.get<Sample[]>(this.baseUrl + '/action/?action=get_subSamples&refDir_id=' + refDir_id);
     }
 
 
     // get sub refFile by RefDirId
     getSubRefFiles(refDir_id: string): Observable<RefFile[]>{
-        return this._http.get(this.baseUrl + '/action/?action=get_subRefFiles&refDir_id=' + refDir_id)
-            .map(res => res.json());
+        return this._http.get<RefFile[]>(this.baseUrl + '/action/?action=get_subRefFiles&refDir_id=' + refDir_id);
     }
 
     // -----------------------------------------------------------------------------------
@@ -78,9 +67,7 @@ export class ServerDataService {
 
     // analyze file as sample
     cmdAnalyzeSample(refFile_id: string){
-      this._http.get(this.baseUrl + '/action/?action=analyzeAsSample&refFileId=' + refFile_id).subscribe(data => {
-          // console.log(data);
-      });
+      this._http.get(this.baseUrl + '/action/?action=analyzeAsSample&refFileId=' + refFile_id).subscribe();
     }
 
     // -----------------------------------------------------------------------------------
@@ -89,8 +76,4 @@ export class ServerDataService {
 
   }
 
-  // getTestData(): void {
-  //     this._http.get(this.baseUrl + '/test/?a=1&b=2&c=3')
-  //         .map(res => res.json());
-  // }
 }

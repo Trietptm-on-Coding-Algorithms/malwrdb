@@ -13,6 +13,7 @@ import { ServerDataService } from '../../services/server-data.service';
   </a>
 
   <!-- RightClick menu to select actions -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <context-menu>
     <ng-template contextMenuItem (execute)="analyzeAsSample()">Analyze!</ng-template>
     <ng-template contextMenuItem (execute)="renameFile()">Rename</ng-template>
@@ -32,7 +33,6 @@ export class RefFileComponent implements OnInit {
   }
 
     analyzeAsSample(){
-        console.log("analyze as sample");
         this._svrdata.cmdAnalyzeSample(this.refFile._id);
     }
 
