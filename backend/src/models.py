@@ -195,7 +195,7 @@ class RefFile(mongoengine.Document):
         """返回到界面的 Json"""
         ret = json.loads(self.to_json())
 
-        del ret["_id"]
+        ret["_id"] = str(self.pk)
         if "_binary" in ret:
             del ret["_binary"]
 

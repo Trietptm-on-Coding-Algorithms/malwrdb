@@ -33,6 +33,7 @@ export class RefFileComponent implements OnInit {
 
     analyzeAsSample(){
         console.log("analyze as sample");
+        this._svrdata.cmdAnalyzeSample(this.refFile._id);
     }
 
     renameFile(){

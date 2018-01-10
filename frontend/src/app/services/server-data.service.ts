@@ -39,6 +39,8 @@ export class ServerDataService {
 
     // -----------------------------------------------------------------------------------
 
+    // get list stuff
+
     // get all RefGroup list
     getGroupList(pageSize: number, pageIndex: number): Observable<RefGroup[]> {
         return this._http.get(this.baseUrl + '/action/?action=get_refGroupList&pageSize=' + pageSize + "&pageIndex=" + pageIndex)
@@ -68,6 +70,17 @@ export class ServerDataService {
     getSubRefFiles(refDir_id: string): Observable<RefFile[]>{
         return this._http.get(this.baseUrl + '/action/?action=get_subRefFiles&refDir_id=' + refDir_id)
             .map(res => res.json());
+    }
+
+    // -----------------------------------------------------------------------------------
+
+    // sample/file
+
+    // analyze file as sample
+    cmdAnalyzeSample(refFile_id: string){
+      this._http.get(this.baseUrl + '/action/?action=analyzeAsSample&refFileId=' + refFile_id).subscribe(data => {
+          // console.log(data);
+      });
     }
 
     // -----------------------------------------------------------------------------------
