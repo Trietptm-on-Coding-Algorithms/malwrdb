@@ -24,7 +24,7 @@ CORS(app, supports_credentials=True)
 # MongoDB 数据库
 app.config["MONGODB_SETTINGS"] = {
     "host": "127.0.0.1",
-    "port": 27017,
+    "port": 27019,
     "username": "lyclovechl",
     "password": "yGeIgWof97zXrzayOwcIhIaF5EqcUR",
     "authentication_source": "admin",
