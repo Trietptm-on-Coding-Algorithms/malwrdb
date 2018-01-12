@@ -4,7 +4,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 
 import { Observable } from 'rxjs/Observable';
 
-import { LogLine, RefGroup, RefDir, RefFile, Sample } from '../models/models'
+import { LogLine, RefGroup, RefDir, RefFile, Sample, Task } from '../models/models'
 
 @Injectable()
 export class ServerDataService {
@@ -105,8 +105,24 @@ export class ServerDataService {
 
     // -----------------------------------------------------------------------------------
 
-    doTest(): void {
+    // task
 
+    // get task list
+    getTaskList(): Observable<Task[]>{
+        let params = new HttpParams();
+        params = params.append("action", 'get_TaskList');
+
+        return this._http.get<Task[]>(this.baseUrl + "/task/", { params: params });
     }
 
+
+    // -----------------------------------------------------------------------------------
+
+    // test
+
+    cmdTest() {
+        this._http.post(this.baseUrl, {
+            "action": "test",
+        }).subscribe();
+    }
 }

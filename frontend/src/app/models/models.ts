@@ -30,5 +30,9 @@ class LogLine{
     level: string;
 }
 
+class Task{
+    _id: string;
+}
 
-export { RefGroup, RefDir, RefFile, Sample, LogLine };
+
+export { RefGroup, RefDir, RefFile, Sample, LogLine, Task };

@@ -53,7 +53,7 @@ import { RefDirComponent } from './sample-list/sub-components/ref-dir.component'
 import { RefFileComponent } from './sample-list/sub-components/ref-file.component';
 import { SampleComponent } from './sample-list/sub-components/sample.component';
 import { AdminLogComponent } from './admin-log/admin-log.component';
-
+import { TaskListComponent } from './tasks/tasks.component';
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -87,6 +87,7 @@ type StoreType = {
       RefFileComponent,
       SampleComponent,
       AdminLogComponent,
+      TaskListComponent,
   ],
   /**
    * Import Angular's modules.

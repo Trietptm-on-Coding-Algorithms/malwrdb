@@ -58,6 +58,48 @@ api = Api(app)
 # -------------------------------------------------------------------------
 
 
+class SetActioin(Resource):
+    def post(self):
+        print("-" * 30 + "Set Action Start" + "-" * 30)
+        ret = self._post()
+        print(ret)
+        print("+" * 30 + "Set Action End" + "+" * 30)
+        return ret
+
+    def _post(self):
+        try:
+            args = json.loads(to_str(request.data))
+            if "action" not in args:
+                raise Exception("no action!")
+
+            action = args["action"]
+            if action == "test":
+                return self.test(args)
+
+            else:
+                raise Exception("invalid action: %s" % action)
+
+        except Exception as e:
+            error(traceback.format_exc())
+            return "exception:\n" + str(e)
+
+    def test(self, args):
+        #
+        import pprint
+        from tasks import celery_task_list_all, celery_task_list_active
+        from tasks import hellox, hellox_success, hellox_fail
+
+        hellox.delay()
+        hellox_success.delay()
+        hellox_fail.delay()
+        
+        # celery_task_list_all()
+        # pprint.pprint(celery_task_list_active())
+        # celery_task_cancel("c6024b0f-9a2c-4da1-ae81-c922b425ff41")
+
+        return "test finish"
+
+
 class LogLineAction(Resource):
     def get(self):
         print("-" * 30 + "LogLine Action Start" + "-" * 30)
@@ -498,7 +540,7 @@ class RefFileActioin(Resource):
 
     def _post(self):
         try:
-            args = json.loads(request.data)
+            args = json.loads(to_str(request.data))
             if "action" not in args:
                 raise Exception("no action!")
 
@@ -523,15 +565,49 @@ class RefFileActioin(Resource):
         return "Analyzing...."
 
 
+class TaskAction(Resource):
+    # some actions for group/sample/file
+    def get(self):
+        print("-" * 30 + "Task Action Start" + "-" * 30)
+        ret = self._get()
+        print(ret)
+        print("+" * 30 + "Task Action End" + "+" * 30)
+        return ret
+
+    def _get(self):
+        try:
+            action = request.args.get("action", None)
+            if not action:
+                raise Exception("no action provided!")
+
+            if action == "get_TaskList":
+                return self.get_TaskList()
+
+            else:
+                raise Exception("invalid action: %s" % action)
+
+        except Exception as e:
+            error(traceback.format_exc())
+            return "exception!"
+
+    def get_TaskList(self):
+        #
+        pass
+
+
 # -------------------------------------------------------------------------
 
-api.add_resource(LogLineAction, '/logline/')
 api.add_resource(Action, '/action/')
+api.add_resource(SetActioin, '/')
+
+api.add_resource(LogLineAction, '/logline/')
 
 api.add_resource(RefFileActioin, '/reffile/')
 
 api.add_resource(SampleSimpleAction, '/sample/action/')
 api.add_resource(SampleUpload, '/sample/upload/')
+
+api.add_resource(TaskAction, '/task/')
 
 # -------------------------------------------------------------------------
 
