@@ -6,17 +6,17 @@ import { Sample } from '../models/models'
 export class SharedDataService {
   // 样本列表
   private _sample_list: Sample[];
-  get sample_list(): Sample[]{
+  get sample_list(): Sample[] {
     return this._sample_list;
   }
-  set sample_list(s_list: Sample[]){
+  set sample_list(s_list: Sample[]) {
     this._sample_list = s_list;
   }
 
   // 当前选中的样本
   private _currentSample: Sample;
   get currentSample(): Sample {
-    if (this._currentSample == undefined && this._sample_list !== undefined && this._sample_list.length != 0){
+    if (this._currentSample == undefined && this._sample_list !== undefined && this._sample_list.length != 0) {
       this._currentSample = this._sample_list[0];
     }
     return this._currentSample;
