@@ -27,13 +27,13 @@ import { RefGroupComponent } from './ref-group/ref-group.component';
   styleUrls: ['./sample-list.component.css']
 })
 export class SampleListComponent implements OnInit {
-    defaultPageSize = 10;
-    pageSizeOptions = [5, 10, 25, 100];
+  defaultPageSize = 10;
+  pageSizeOptions = [5, 10, 25, 100];
 
   is_updating: boolean = false;
 
   showGroupList: RefGroup[];
-    allGroupLength: number;
+  allGroupLength: number;
 
   constructor(
     private _router: Router,
@@ -42,15 +42,15 @@ export class SampleListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-      this.getGroupList();
+    this.getGroupList();
   }
 
-  getGroupList(pageSize: number=this.defaultPageSize, pageIndex: number=0): void{
+  getGroupList(pageSize: number = this.defaultPageSize, pageIndex: number = 0): void {
     this.is_updating = true;
     this._svrdata.getGroupList(pageSize, pageIndex).subscribe(
       v => {
-          this.showGroupList = v["group_list"];
-          this.allGroupLength = v["group_length"];
+        this.showGroupList = v["group_list"];
+        this.allGroupLength = v["group_length"];
         this.is_updating = false;
       },
       e => {
@@ -61,8 +61,8 @@ export class SampleListComponent implements OnInit {
       }
     );
   }
-    // reload groupList
-    reload(evt: any) {
-        this.getGroupList(evt.pageSize, evt.pageIndex);
-    }
+  // reload groupList
+  reload(evt: any) {
+    this.getGroupList(evt.pageSize, evt.pageIndex);
+  }
 }

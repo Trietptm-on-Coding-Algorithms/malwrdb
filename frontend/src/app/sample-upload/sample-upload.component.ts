@@ -24,7 +24,7 @@ export class SampleUploadComponent {
   public hasBaseDropZoneOver: boolean = false;
   public hasAnotherDropZoneOver: boolean = false;
 
-    group_id: string = "";
+  group_id: string = "";
 
   constructor(
     private _toastr: ToastrService,
@@ -46,27 +46,27 @@ export class SampleUploadComponent {
     this._toastr.warning('Hello world!', 'Toastr fun!');
   }
 
-    // group file selected
-    groupDirChanged(files: any[]) {
-      // generate new group_id
-        this.group_id = this._util.generateGuuId();
-    }
+  // group file selected
+  groupDirChanged(files: any[]) {
+    // generate new group_id
+    this.group_id = this._util.generateGuuId();
+  }
 
-    // group files upload
-    groupDirUpload() {
-        console.log("total file count to upload: " + this.group_uploader.queue.length);
-        // set url for each file
-        for (var i = this.group_uploader.queue.length - 1; i >= 0; i--) {
-            let file = this.group_uploader.queue[i];
-            file.updateUrl(URL + "?type=sample_group&group_id=" + this.group_id + "&relative_path=" + file._file.webkitRelativePath);
-        }
-        this.group_uploader.uploadAll();
+  // group files upload
+  groupDirUpload() {
+    console.log("total file count to upload: " + this.group_uploader.queue.length);
+    // set url for each file
+    for (var i = this.group_uploader.queue.length - 1; i >= 0; i--) {
+      let file = this.group_uploader.queue[i];
+      file.updateUrl(URL + "?type=sample_group&group_id=" + this.group_id + "&relative_path=" + file._file.webkitRelativePath);
     }
+    this.group_uploader.uploadAll();
+  }
 
-    // group file cleared(may or may not after upload)
-    groupDirClean() {
-        this.group_id = "";
-        this.group_uploader.clearQueue();
-        this.group_uploader.setOptions({ url: "" });
-    }
+  // group file cleared(may or may not after upload)
+  groupDirClean() {
+    this.group_id = "";
+    this.group_uploader.clearQueue();
+    this.group_uploader.setOptions({ url: "" });
+  }
 }

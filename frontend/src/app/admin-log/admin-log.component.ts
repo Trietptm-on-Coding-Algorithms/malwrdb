@@ -40,13 +40,13 @@ export class AdminLogComponent implements OnInit {
       v => {
         this.logLines = v;
       },
-      e =>{
+      e => {
         console.log("getLogLines fail: " + e);
       }
-      );
+    );
   }
 
-  clearLog(){
+  clearLog() {
     this._svrdata.clearLogLines();
     this.logLines = [];
   }

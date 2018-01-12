@@ -1,4 +1,5 @@
 bin
-include
 lib
+include
 share
+pip-selfcheck.json

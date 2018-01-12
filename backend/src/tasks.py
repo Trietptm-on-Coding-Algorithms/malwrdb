@@ -7,6 +7,20 @@ import hashlib
 
 from models import *
 
+from celery import Celery
+
+app_celery = Celery('tasks', broker='redis://localhost:6379/9')
+app_celery.conf.result_backend = 'redis://localhost:6379/10'
+
+def x():
+    print("x" * 100)
+
+@app_celery.task
+def hello():
+    x()
+    print('hello world' * 10)
+
+
 # -------------------------------------------------------------------------
 
 

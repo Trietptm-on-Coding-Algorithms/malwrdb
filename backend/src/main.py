@@ -519,6 +519,7 @@ class RefFileActioin(Resource):
             raise Exception("no ref file id provided!")
 
         ref_file_id = args["refFileId"]
+        hello.delay()
         return "Analyzing...."
 
 
