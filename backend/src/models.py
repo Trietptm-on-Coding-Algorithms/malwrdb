@@ -219,19 +219,16 @@ class RefFile(mongoengine.Document):
 
 
 class TaskHistory(mongoengine.Document):
-    """Task history.
-
-    Not editable once saved.
-    """
+    """Task history."""
 
     meta = {'collection': 'task_history'}
 
     celery_task_id = mongoengine.StringField(required=True)
     task_type = mongoengine.StringField(required=True)
-    start_time = mongoengine.DateTimeField(required=True)
-
+    create_time = mongoengine.DateTimeField(required=True)
     latest_status = mongoengine.StringField(required=True)
 
+    start_time = mongoengine.DateTimeField()
     finish_time = mongoengine.DateTimeField()
     finish_status = mongoengine.StringField()
 
@@ -244,15 +241,24 @@ class TaskHistory(mongoengine.Document):
     # task_type: compare samples to find similarity
     # ...
 
-    add_time = mongoengine.DateTimeField()
+    add_time = mongoengine.DateTimeField(default=datetime.now())
+    update_time = mongoengine.DateTimeField()
 
     def clean(self):
         """When save, set self.add_time."""
-        self.add_time = datetime.now()
+        self.update_time = datetime.now()
 
     def json_ui(self):
         """Json object return to UI."""
-        pass
+        ret = json.loads(self.to_json())
+
+        ret["_id"] = str(self.pk)
+
+        ret["create_time"] = ret["create_time"]["$date"]
+        if "finish_time" in ret:
+            ret["finish_time"] = ret["finish_time"]["$date"]
+
+        return ret
 
 
 # -------------------------------------------------------------------------

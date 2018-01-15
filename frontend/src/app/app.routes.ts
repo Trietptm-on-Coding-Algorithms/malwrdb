@@ -7,7 +7,7 @@ import { SampleDetailComponent } from './sample-detail';
 import { AdminLogComponent } from './admin-log/admin-log.component';
 import { AboutComponent } from './about';
 import { NoContentComponent } from './no-content';
-import { TaskListComponent } from './tasks/tasks.component';
+import { TaskListComponent } from './tasks/tasks-list.component';
 
 export const ROUTES: Routes = [
   { path: '',      component: HomeComponent },

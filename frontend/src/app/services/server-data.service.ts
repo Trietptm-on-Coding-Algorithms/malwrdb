@@ -4,7 +4,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 
 import { Observable } from 'rxjs/Observable';
 
-import { LogLine, RefGroup, RefDir, RefFile, Sample, Task } from '../models/models'
+import { LogLine, RefGroup, RefDir, RefFile, Sample, ActiveTask, HistoryTask } from '../models/models'
 
 @Injectable()
 export class ServerDataService {
@@ -108,11 +108,19 @@ export class ServerDataService {
     // task
 
     // get task list
-    getTaskList(): Observable<Task[]>{
+    getTaskList(): Observable<any[]>{
         let params = new HttpParams();
         params = params.append("action", 'get_TaskList');
 
-        return this._http.get<Task[]>(this.baseUrl + "/task/", { params: params });
+        return this._http.get<any[]>(this.baseUrl + "/task/", { params: params });
+    }
+
+    // cancel task
+    cmdCancelTask(taskId: string) {
+        this._http.post(this.baseUrl + "/task/", {
+            "action": "cancelTask",
+            "taskId": taskId,
+        }).subscribe();
     }
 
 

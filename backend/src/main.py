@@ -13,10 +13,12 @@ from flask_cors import CORS
 from flask_restful import Api, Resource
 from flask_mongoengine import MongoEngine
 
+import tasks
+import tasks_wrapper
 from log import log
 from utils import to_str, path_to_dirs
 from models import LogLine, Sample, RefFile, RefGroup, RefDir, RefFileBelongTo, SampleBelongTo
-from tasks_wrapper import get_task_info, analyze_ref_file_as_sample
+
 
 # -------------------------------------------------------------------------
 
@@ -589,9 +591,7 @@ class RefFileActioin(Resource):
         if "refFileId" not in args:
             raise Exception("no ref file id provided!")
 
-        analyze_ref_file_as_sample(args["refFileId"])
-
-        return "Analyzing...."
+        return tasks_wrapper.analyze_ref_file_as_sample(args["refFileId"])
 
 
 # -------------------------------------------------------------------------
@@ -602,10 +602,10 @@ class TaskAction(Resource):
 
     def get(self):
         """Wrapper for self._get()."""
-        print("-" * 30 + "Task Action Start" + "-" * 30)
+        print("-" * 30 + "Task Action Get Start" + "-" * 30)
         ret = self._get()
         print(ret)
-        print("+" * 30 + "Task Action End" + "+" * 30)
+        print("+" * 30 + "Task Action Get End" + "+" * 30)
         return ret
 
     def _get(self):
@@ -626,7 +626,46 @@ class TaskAction(Resource):
 
     def get_task_list(self):
         """Get all tasks."""
-        return get_task_info()
+        ret = {}
+
+        ret["active"] = tasks.get_active_task_list()
+        ret["history"] = tasks_wrapper.get_task_history()
+        ret["reversed"] = tasks.get_reserved_task_list()
+        ret["scheduled"] = tasks.get_scheduled_task_list()
+
+        return ret
+
+    def post(self):
+        """Wrapper of self._post()."""
+        print("-" * 30 + "Task Action Set Start" + "-" * 30)
+        ret = self._post()
+        print(ret)
+        print("+" * 30 + "Task Action Set End" + "+" * 30)
+        return ret
+
+    def _post(self):
+        try:
+            args = json.loads(to_str(request.data))
+            if "action" not in args:
+                raise Exception("no action!")
+
+            action = args["action"]
+            if action == "cancelTask":
+                return self.cancel_task(args)
+
+            else:
+                raise Exception("invalid action: %s" % action)
+
+        except Exception as e:
+            error(traceback.format_exc())
+            return "exception:\n" + str(e)
+
+    def cancel_task(self, args):
+        """Cancel task."""
+        if "taskId" not in args:
+            raise Exception("no task id provided!")
+
+        return tasks_wrapper.cancel_celery_task(args["taskId"])
 
 
 # -------------------------------------------------------------------------
@@ -647,10 +686,14 @@ api.add_resource(TaskAction, '/task/')
 
 if __name__ == '__main__':
 
-    import tasks_wrapper
     tasks_wrapper.retrieve_tasks_from_celery()
 
     import threading
-    threading.Thread(target=tasks_wrapper.check_close_task_history).start()
+    t = threading.Thread(target=tasks_wrapper.check_close_task_history)
+    t.start()
 
     app.run(debug=True)
+
+    t.join()
+
+# -------------------------------------------------------------------------

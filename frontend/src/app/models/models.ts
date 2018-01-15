@@ -30,9 +30,22 @@ class LogLine{
     level: string;
 }
 
-class Task{
-    _id: string;
+class ActiveTask{
+    id: string;
+    name: string;
+    create_time: number;
+    start_time: number;
 }
 
+class HistoryTask{
+    _id: string;
+    celery_task_id: string;
+    name: string;
 
-export { RefGroup, RefDir, RefFile, Sample, LogLine, Task };
+    create_time: number;
+    start_time: number;
+    finish_time: number;
+    finish_status: string;
+}
+
+export { RefGroup, RefDir, RefFile, Sample, LogLine, ActiveTask, HistoryTask};

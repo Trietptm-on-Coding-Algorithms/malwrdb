@@ -46,7 +46,7 @@ def get_task_info():
 def get_task_history():
     """Get all TaskHistory from mongodb."""
     ret = []
-    for history in TaskHistory.objects.order_by("-add_time"):
+    for history in TaskHistory.objects(finish_time__ne=None).order_by("-create_time"):
         ret.append(history.json_ui())
     return ret
 
@@ -57,6 +57,22 @@ def get_task_history_not_closed():
 
 
 # -------------------------------------------------------------------------
+
+# task operation
+
+
+def cancel_celery_task(task_id):
+    """Cancel celery task, if running..."""
+    q_history = TaskHistory.objects(celery_task_id=task_id)
+    if q_history.count() != 1:
+        raise Exception("0 or more than 1 TaskHistory by task_id")
+
+    history = q_history[0]
+    history.finish_time = datetime.now()
+    history.finish_status = "canceled"
+    history.save()
+
+    tasks.celery_task_cancel(task_id)
 
 
 def analyze_ref_file_as_sample(ref_file_id):
@@ -86,11 +102,13 @@ def analyze_ref_file_as_sample(ref_file_id):
     task_history = TaskHistory()
     task_history.task_type = TASK_TYPE_ANALYZE_REFFILE_AS_SAMPLE
     task_history.ref_file_id = ref_file_id
-    task_history.start_time = datetime.now()
+    task_history.create_time = datetime.now()
     task_history.analyze_type = "PE32"
     task_history.celery_task_id = task_result.task_id
     task_history.latest_status = task_result.state
     task_history.save()
+
+    return "added task..."
 
 
 # -------------------------------------------------------------------------
