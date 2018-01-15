@@ -1,22 +1,27 @@
-#!/usr/bin/python3
+# !/usr/bin/python3
 # -*- coding: utf-8 -*-
+
+
+"""Task helper functions."""
+
 
 # -------------------------------------------------------------------------
 
 import hashlib
 
-from models import *
+# from models import TaskHistory
 
 from celery import Celery
 
 node_name = "celery@ubuntu"  # we only have svr as 1 node.
 
 app_celery = Celery('tasks', broker='redis://localhost:6379/9')
-# app_celery.conf.result_backend = 'redis://localhost:6379/10'
-stat = app_celery.events.State()
+app_celery.conf.result_backend = 'redis://localhost:6379/10'
+
 
 @app_celery.task(name="testhtask")
 def hellox():
+    """Forever loop task."""
     import time
     while True:
         print('working...')
@@ -25,11 +30,13 @@ def hellox():
 
 @app_celery.task(name="testhtask_success")
 def hellox_success():
+    """Instant success task."""
     print("i'm done!!!!")
 
 
 @app_celery.task(name="testhtask_fail")
 def hellox_fail():
+    """Instant fail task."""
     print("i'm dommmed!!!!")
     raise Exception("BOMMMMMM")
 
@@ -42,8 +49,8 @@ def _get_inspect():
 
 
 def celery_task_list_all():
-    #
-    i = _get_inspect()       
+    """Get all tasks from celery worker."""
+    i = _get_inspect()
     task_name_list = i.registered()[node_name]
     ret = []
     for task_name in task_name_list:
@@ -51,20 +58,16 @@ def celery_task_list_all():
         # ret.append(task_name)
         pass
 
-    # global app_celery
-    # print(app_celery.events.state)
-    # print(stat)
-
     # print("events.state.tasks_by_timestamp():")
 
     """
-    ['Task', 'Worker',  '_add_pending_task_child', '_clear', 
-    '_clear_tasks', '_create_dispatcher', '_event', '_mutex', '_seen_types', '_taskheap', 
-    '_tasks_by_type', '_tasks_by_worker', '_tasks_to_resolve', 'alive_workers', 'app', 'clear', 
-    'clear_tasks', 'event', 'event_callback', 'event_count', 'freeze_while', 'get_or_create_task', 
-    'get_or_create_worker', 'handlers', 'heap_multiplier', 'itertasks', 'max_tasks_in_memory', 
-    'max_workers_in_memory', 'on_node_join', 'on_node_leave', 'rebuild_taskheap', 'task_count', 
-    'task_event', 'task_types', 'tasks', 'tasks_by_time', 'tasks_by_timestamp', 'tasks_by_type', 
+    ['Task', 'Worker',  '_add_pending_task_child', '_clear',
+    '_clear_tasks', '_create_dispatcher', '_event', '_mutex', '_seen_types', '_taskheap',
+    '_tasks_by_type', '_tasks_by_worker', '_tasks_to_resolve', 'alive_workers', 'app', 'clear',
+    'clear_tasks', 'event', 'event_callback', 'event_count', 'freeze_while', 'get_or_create_task',
+    'get_or_create_worker', 'handlers', 'heap_multiplier', 'itertasks', 'max_tasks_in_memory',
+    'max_workers_in_memory', 'on_node_join', 'on_node_leave', 'rebuild_taskheap', 'task_count',
+    'task_event', 'task_types', 'tasks', 'tasks_by_time', 'tasks_by_timestamp', 'tasks_by_type',
     'tasks_by_worker', 'worker_event', 'workers']
 
     """
@@ -135,7 +138,7 @@ def celery_task_list_all():
      "broker_url: 'redis://localhost:6379/9'\n"}
 
     """
-    
+
     # print("i.scheduled()")
     # pprint.pprint(i.scheduled())  # not active, waiting to be scheduled
     """
@@ -188,7 +191,7 @@ def celery_task_list_all():
               'oublock': 0,
               'stime': 0.23726899999999998,
               'utime': 1.548287},
-   'total': {'testhtask': 3}}       -> 
+   'total': {'testhtask': 3}}       ->
 
     """
 
@@ -196,6 +199,7 @@ def celery_task_list_all():
 
 
 def celery_task_list_active():
+    """Get all running tasks from celery worker."""
     """
     active():
     {'acknowledged': True,
@@ -245,18 +249,22 @@ def celery_task_list_active():
 
 
 def celery_task_cancel(task_id):
+    """Cancel specified celery task by task_id."""
     app_celery.control.revoke(task_id, terminate=True)
 
+
+def retrieve_tasks_from_celery():
+    """When server start, retrieve task information from celery worker."""
+    pass
 
 # -------------------------------------------------------------------------
 
 
 def sample_check_exist_or_insert(sample_binary):
-    """
-    检查 sample 的 sha256, 没有则插入, 有则返回数据库中的 Sample
-    """
+    u"""检查 sample 的 sha256, 没有则插入, 有则返回数据库中的 Sample."""
     sha256 = hashlib.sha256(sample_binary.encode('utf-8')).hexdigest()
 
+    from models import Sample
     q = Sample.objects(sha256=sha256)
 
     if q.count() == 0:

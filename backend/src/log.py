@@ -1,18 +1,17 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# !/usr/bin/python3
 
-# -------------------------------------------------------------------------
-
-from models import *
+"""Log func definations."""
 
 # -------------------------------------------------------------------------
 
 
 def log(file, info, level):
-    # print log to screen and save to database
+    """Print log to screen and save to database."""
     print("[%s] : %s" % (level.upper(), info))
 
     try:
+        from models import LogLine
         log_ = LogLine()
         log_.file = file
         log_.info = info

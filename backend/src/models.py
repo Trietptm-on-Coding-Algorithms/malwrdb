@@ -1,5 +1,7 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# !/usr/bin/python3
+
+"""Mongodb Document definitions."""
 
 # -------------------------------------------------------------------------
 
@@ -9,12 +11,13 @@ from datetime import datetime
 
 from flask_mongoengine import mongoengine
 
+
 # -------------------------------------------------------------------------
 
+
 class LogLine(mongoengine.Document):
-    """
-    日志
-    """
+    """Log stuff."""
+
     meta = {'collection': "log_line"}
 
     file = mongoengine.StringField(required=True)
@@ -24,6 +27,7 @@ class LogLine(mongoengine.Document):
     add_time = mongoengine.DateTimeField(default=datetime.now())
 
     def json_ui(self):
+        """Json object return to UI."""
         ret = json.loads(self.to_json())
 
         del ret["_id"]
@@ -32,9 +36,8 @@ class LogLine(mongoengine.Document):
 
 
 class RefGroup(mongoengine.Document):
-    """
-    a group of refFiles/dirs/samples
-    """
+    """A group of refFiles/dirs/samples."""
+
     meta = {'collection': "ref_group"}
 
     group_id = mongoengine.StringField(required=True)
@@ -43,9 +46,11 @@ class RefGroup(mongoengine.Document):
     update_time = mongoengine.DateTimeField()
 
     def clean(self):
+        """Set update_time."""
         self.update_time = datetime.now()
 
     def json_ui(self):
+        """Json object return to UI."""
         ret = json.loads(self.to_json())
 
         del ret["_id"]
@@ -55,9 +60,8 @@ class RefGroup(mongoengine.Document):
 
 
 class RefDir(mongoengine.Document):
-    """
-    so we can orginaze files
-    """
+    """So we can orginaze files."""
+
     meta = {'collection': "ref_dir"}
 
     dir_name = mongoengine.StringField(required=True)
@@ -66,9 +70,11 @@ class RefDir(mongoengine.Document):
     parnetRefDir = mongoengine.ReferenceField('self')
 
     def clean(self):
+        """Update  "update_time" of corresponding refGroup."""
         self.refGroup.save()  # update it's update_time
 
     def json_ui(self):
+        """Json object return to UI."""
         ret = json.loads(self.to_json())
 
         # # frontend need this _id as string
@@ -82,9 +88,8 @@ class RefDir(mongoengine.Document):
 
 
 class SampleBelongTo(mongoengine.Document):
-    """
-    use this to decide "location" of a sample
-    """
+    """Use this to decide "location" of a sample."""
+
     meta = {'collection': "sample_belongto"}
 
     refGroup = mongoengine.ReferenceField('RefGroup', required=True)
@@ -98,13 +103,16 @@ class SampleBelongTo(mongoengine.Document):
     sample_relative_path = mongoengine.StringField()
 
     def clean(self):
+        """Update "update_time" of corresponding refGroup."""
         self.refGroup.save()  # update it's update_time
 
 
 class Sample(mongoengine.Document):
+    """Sample.
+
+    Only "solid" information here.
     """
-    sample. only "solid" information
-    """
+
     meta = {'collection': "sample"}
 
     _binary = mongoengine.BinaryField()
@@ -131,13 +139,15 @@ class Sample(mongoengine.Document):
     update_time = mongoengine.DateTimeField()
 
     def clean(self):
+        """Update some."""
         pass
 
     def to_filter(self):
+        """What?."""
         return {"sha256": self.sha256}
 
     def json_ui(self):
-        """返回到界面的 Json"""
+        """Json object return to UI."""
         ret = json.loads(self.to_json())
 
         del ret["_id"]
@@ -147,9 +157,8 @@ class Sample(mongoengine.Document):
 
 
 class RefFileBelongTo(mongoengine.Document):
-    """
-    use this to decide "location" of a refFile
-    """
+    """Use this to decide "location" of a refFile."""
+
     meta = {'collection': "ref_file_belongto"}
 
     refGroup = mongoengine.ReferenceField('RefGroup', required=True)
@@ -161,13 +170,13 @@ class RefFileBelongTo(mongoengine.Document):
     file_relative_path = mongoengine.StringField()
 
     def clean(self):
+        """Update "update_time" of corresponding regGroup."""
         self.refGroup.save()  # update it's update_time
 
 
 class RefFile(mongoengine.Document):
-    """
-    File for Reference
-    """
+    """File for Reference."""
+
     meta = {'collection': "ref_file"}
 
     _binary = mongoengine.BinaryField()
@@ -181,6 +190,7 @@ class RefFile(mongoengine.Document):
     file_type = mongoengine.StringField()
 
     def clean(self):
+        """Update some thing on save."""
         if self._binary and len(self._binary) != 0:
 
             self.file_size = len(self._binary)
@@ -192,7 +202,7 @@ class RefFile(mongoengine.Document):
             self.file_size = 0
 
     def json_ui(self):
-        """返回到界面的 Json"""
+        """Json object return to UI."""
         ret = json.loads(self.to_json())
 
         ret["_id"] = str(self.pk)
@@ -200,5 +210,42 @@ class RefFile(mongoengine.Document):
             del ret["_binary"]
 
         return ret
+
+# -------------------------------------------------------------------------
+
+
+class TaskHistory(mongoengine.Document):
+    """Task history.
+
+    Not editable once saved.
+    """
+
+    meta = {'collection': 'task_history'}
+
+    celery_task_id = mongoengine.StringField(required=True)
+    task_type = mongoengine.StringField(required=True)
+    start_time = mongoengine.DateTimeField(required=True)
+    finish_time = mongoengine.DateTimeField(required=True)
+    finish_status = mongoengine.StringField(required=True)
+
+    # task_type: analyze_refFile_as_sample
+    ref_file_id = mongoengine.StringField()    # if analyze success, this will be set as none
+    sample_id = mongoengine.StringField()      # if anlyaze fail, this will not set
+    analyze_type = mongoengine.StringField()   #
+    fail_reason = mongoengine.StringField()    # if analyze fail, this describe why
+
+    # task_type: compare samples to find similarity
+    # ...
+
+    add_time = mongoengine.DateTimeField()
+
+    def clean(self):
+        """When save, set self.add_time."""
+        self.add_time = datetime.now()
+
+    def json_ui(self):
+        """Json object return to UI."""
+        pass
+
 
 # -------------------------------------------------------------------------
