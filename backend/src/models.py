@@ -35,6 +35,9 @@ class LogLine(mongoengine.Document):
         return ret
 
 
+# -------------------------------------------------------------------------
+
+
 class RefGroup(mongoengine.Document):
     """A group of refFiles/dirs/samples."""
 
@@ -211,6 +214,7 @@ class RefFile(mongoengine.Document):
 
         return ret
 
+
 # -------------------------------------------------------------------------
 
 
@@ -225,8 +229,11 @@ class TaskHistory(mongoengine.Document):
     celery_task_id = mongoengine.StringField(required=True)
     task_type = mongoengine.StringField(required=True)
     start_time = mongoengine.DateTimeField(required=True)
-    finish_time = mongoengine.DateTimeField(required=True)
-    finish_status = mongoengine.StringField(required=True)
+
+    latest_status = mongoengine.StringField(required=True)
+
+    finish_time = mongoengine.DateTimeField()
+    finish_status = mongoengine.StringField()
 
     # task_type: analyze_refFile_as_sample
     ref_file_id = mongoengine.StringField()    # if analyze success, this will be set as none

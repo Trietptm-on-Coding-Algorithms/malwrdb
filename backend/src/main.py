@@ -14,8 +14,9 @@ from flask_restful import Api, Resource
 from flask_mongoengine import MongoEngine
 
 from log import log
-from models import LogLine, Sample, RefFile, RefGroup, RefDir, RefFileBelongTo, SampleBelongTo
 from utils import to_str, path_to_dirs
+from models import LogLine, Sample, RefFile, RefGroup, RefDir, RefFileBelongTo, SampleBelongTo
+from tasks_wrapper import get_task_info
 
 # -------------------------------------------------------------------------
 
@@ -593,6 +594,9 @@ class RefFileActioin(Resource):
         return "Analyzing...."
 
 
+# -------------------------------------------------------------------------
+
+
 class TaskAction(Resource):
     """Some actions for group/sample/file."""
 
@@ -622,7 +626,7 @@ class TaskAction(Resource):
 
     def get_task_list(self):
         """Get all tasks."""
-        pass
+        return get_task_info()
 
 
 # -------------------------------------------------------------------------
