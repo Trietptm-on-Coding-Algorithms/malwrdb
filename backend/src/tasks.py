@@ -4,12 +4,9 @@
 
 """Task helper functions.
 
-Relationship betweek tasks_wrapper.py | tasks.py | tasks.define.py:
-    main.py <--> tasks_wrapper.py <--> tasks.py
-                                  <--> tasks.define.py
-    tasks.py           : app_celery definations and configuration
-    tasks_wrapper.py   : tasks check and management
-    tasks_define.py    : task functions
+To make this work, u need:
+    1. start redis at port 6381
+    2. start celery worker by execute in this file dir: celery -A tasks worker --loglevel=info
 """
 
 
@@ -19,8 +16,8 @@ Relationship betweek tasks_wrapper.py | tasks.py | tasks.define.py:
 from celery import Celery
 
 node_name = "celery@ubuntu"  # use default as the only node
-app_celery = Celery('tasks', broker='redis://localhost:6379/9')
-app_celery.conf.result_backend = 'redis://localhost:6379/10'
+app_celery = Celery('tasks', broker='redis://localhost:6381/9', include=['tasks_define'])
+app_celery.conf.result_backend = 'redis://localhost:6381/10'
 
 
 # -------------------------------------------------------------------------
@@ -158,6 +155,20 @@ def get_status():
     return i.stats()
 
 
+def has_not_finished_task(task_id):
+    """Check has some not finished task by task_id."""
+    # 1. active task
+    for task_info in get_active_task_list():
+        if task_info["id"] == task_id:
+            return True
+
+    # 2. reserved task
+
+    # 3. scheduled task
+
+    return False
+
+
 # -------------------------------------------------------------------------
 
 # task operate
@@ -167,12 +178,5 @@ def celery_task_cancel(task_id):
     """Cancel specified celery task by task_id."""
     app_celery.control.revoke(task_id, terminate=True)
 
-
-# -------------------------------------------------------------------------
-
-
-def retrieve_tasks_from_celery():
-    """When server start, retrieve task information from celery worker."""
-    pass
 
 # -------------------------------------------------------------------------

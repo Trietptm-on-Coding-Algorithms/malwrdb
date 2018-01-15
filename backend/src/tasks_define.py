@@ -9,12 +9,12 @@
 
 
 from tasks import app_celery
-
+from defines import TASK_TYPE_ANALYZE_REFFILE_AS_SAMPLE
 
 # -------------------------------------------------------------------------
 
 
-@app_celery.task(name="analyze_ref_file_as_sample")
+@app_celery.task(name=TASK_TYPE_ANALYZE_REFFILE_AS_SAMPLE)
 def task_analyze_ref_file_as_sample(ref_file_id):
     """Analyze refFile as Sample.
 

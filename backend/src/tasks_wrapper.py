@@ -2,15 +2,23 @@
 # -*- coding: utf-8 -*-
 
 
-"""Task wrapper functions."""
+"""Task wrapper functions.
+
+Relationship betweek tasks_wrapper.py | tasks.py | tasks.define.py:
+    main.py <--> tasks_wrapper.py <--> tasks.py
+                                  <--> tasks.define.py
+    tasks.py           : app_celery definations and configuration
+    tasks_wrapper.py   : tasks check and management
+    tasks_define.py    : task functions
+"""
 
 # -------------------------------------------------------------------------
 
 import time
 from datetime import datetime
 
+import tasks
 from models import RefFile, TaskHistory
-from tasks import get_active_task_list
 from tasks_define import task_analyze_ref_file_as_sample
 
 
@@ -21,8 +29,11 @@ from tasks_define import task_analyze_ref_file_as_sample
 
 def get_task_info():
     """Get and format task info from tasks.py then return to ui."""
+    # import pprint
+    # pprint.pprint(tasks.get_status())
+    # return "xx"
     ret = []
-    for task in get_active_task_list():
+    for task in tasks.get_active_task_list():
         ret.append(task)
     return ret
 
@@ -69,17 +80,25 @@ def analyze_ref_file_as_sample(ref_file_id):
         raise Exception("task of analyzing this ref file as sample is running, don't start another!")
 
     # x. everything checked! add to celery worker and mongodb TaskHistory
+
+    task_result = task_analyze_ref_file_as_sample.delay(ref_file_id)
+
     task_history = TaskHistory()
     task_history.task_type = TASK_TYPE_ANALYZE_REFFILE_AS_SAMPLE
     task_history.ref_file_id = ref_file_id
     task_history.start_time = datetime.now()
     task_history.analyze_type = "PE32"
-    task_history.celery_task_id = task_analyze_ref_file_as_sample.delay(ref_file_id)
-    task_history.latest_status = "added_to_celery_worker"
+    task_history.celery_task_id = task_result.task_id
+    task_history.latest_status = task_result.state
     task_history.save()
 
 
 # -------------------------------------------------------------------------
+
+
+def retrieve_tasks_from_celery():
+    """When server start, retrieve task information from celery worker."""
+    pass
 
 
 def check_close_task_history():
@@ -87,10 +106,10 @@ def check_close_task_history():
 
     - Run this in a single thread.
     """
-    from tasks import check_has_not_finished_task
+    from tasks import has_not_finished_task
     while True:
         for history in get_task_history_not_closed():
-            if not check_has_not_finished_task(history.celery_task_id):
+            if not has_not_finished_task(history.celery_task_id):
                 history.finish_time = datetime.now()
                 history.finish_status = "force close"
                 history.save()

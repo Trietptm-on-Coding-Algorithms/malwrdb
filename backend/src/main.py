@@ -16,7 +16,7 @@ from flask_mongoengine import MongoEngine
 from log import log
 from utils import to_str, path_to_dirs
 from models import LogLine, Sample, RefFile, RefGroup, RefDir, RefFileBelongTo, SampleBelongTo
-from tasks_wrapper import get_task_info
+from tasks_wrapper import get_task_info, analyze_ref_file_as_sample
 
 # -------------------------------------------------------------------------
 
@@ -589,8 +589,8 @@ class RefFileActioin(Resource):
         if "refFileId" not in args:
             raise Exception("no ref file id provided!")
 
-        # ref_file_id = args["refFileId"]
-        # hello.delay()
+        analyze_ref_file_as_sample(args["refFileId"])
+
         return "Analyzing...."
 
 
@@ -647,7 +647,10 @@ api.add_resource(TaskAction, '/task/')
 
 if __name__ == '__main__':
 
-    from tasks import retrieve_tasks_from_celery
-    retrieve_tasks_from_celery()
+    import tasks_wrapper
+    tasks_wrapper.retrieve_tasks_from_celery()
+
+    import threading
+    threading.Thread(target=tasks_wrapper.check_close_task_history).start()
 
     app.run(debug=True)
