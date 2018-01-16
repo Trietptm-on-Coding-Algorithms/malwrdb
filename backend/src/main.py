@@ -65,6 +65,74 @@ api = Api(app)
 # -------------------------------------------------------------------------
 
 
+class TestAction(Resource):
+    """Test stuff."""
+
+    def get(self):
+        """Wrapper for self._get()."""
+        print("-" * 30 + "Test Action Get Start" + "-" * 30)
+        ret = self._get()
+        print(ret)
+        print("+" * 30 + "Test Action Get End" + "+" * 30)
+        return ret
+
+    def _get(self):
+        try:
+            action = request.args.get("action", None)
+            if not action:
+                raise Exception("no action provided!")
+
+            print("action: " + action)
+
+            if action == "test":
+                return self.test_get()
+
+            else:
+                raise Exception("invalid action: %s" % action)
+
+        except:
+            error(traceback.format_exc())
+            return "exception!"
+
+    def post(self):
+        """Wrapper of self._post()."""
+        print("-" * 30 + "Test Action Set Start" + "-" * 30)
+        ret = self._post()
+        print(ret)
+        print("+" * 30 + "Test Action Set End" + "+" * 30)
+        return ret
+
+    def _post(self):
+        try:
+            args = json.loads(to_str(request.data))
+            if "action" not in args:
+                raise Exception("no action!")
+
+            action = args["action"]
+            if action == "test":
+                return self.test_set(args)
+
+            else:
+                raise Exception("invalid action: %s" % action)
+
+        except Exception as e:
+            error(traceback.format_exc())
+            return "exception:\n" + str(e)
+
+    def test_get(self):
+        """Test get."""
+        # import time
+        # for x in range(10):
+        #     yield x
+        #     time.sleep(1)
+        # yield "finish"
+        return "test get finish"
+
+    def test_set(self, args):
+        """Test post."""
+        pass
+
+
 class LogLineAction(Resource):
     """LogLine manipulation."""
 
@@ -268,8 +336,8 @@ class SetAction(Resource):
                 raise Exception("no action!")
 
             action = args["action"]
-            if action == "test":
-                return self.test(args)
+            if action == "":
+                pass
 
             else:
                 raise Exception("invalid action: %s" % action)
@@ -277,22 +345,6 @@ class SetAction(Resource):
         except Exception as e:
             error(traceback.format_exc())
             return "exception:\n" + str(e)
-
-    def test(self, args):
-        """Test."""
-        # import pprint
-        # from tasks import celery_task_list_all, celery_task_list_active
-        # from tasks import hellox, hellox_success, hellox_fail
-
-        # hellox.delay()
-        # hellox_success.delay()
-        # hellox_fail.delay()
-        #
-        # celery_task_list_all()
-        # pprint.pprint(celery_task_list_active())
-        # celery_task_cancel("c6024b0f-9a2c-4da1-ae81-c922b425ff41")
-
-        return "test finish"
 
 
 class SampleSimpleAction(Resource):
@@ -669,6 +721,8 @@ class TaskAction(Resource):
 
 
 # -------------------------------------------------------------------------
+
+api.add_resource(TestAction, '/test/')
 
 api.add_resource(Action, '/action/')
 api.add_resource(SetAction, '/')

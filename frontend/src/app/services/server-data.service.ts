@@ -129,8 +129,15 @@ export class ServerDataService {
     // test
 
     cmdTest() {
-        this._http.post(this.baseUrl, {
+        this._http.post(this.baseUrl + "/test/", {
             "action": "test",
         }).subscribe();
+    }
+
+    getTest(): Observable<any[]>{
+        let params = new HttpParams();
+        params = params.append("action", 'test');
+
+        return this._http.get<any[]>(this.baseUrl + "/test/", { params: params });
     }
 }
