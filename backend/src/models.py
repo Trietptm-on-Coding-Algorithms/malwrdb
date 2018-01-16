@@ -218,6 +218,41 @@ class RefFile(mongoengine.Document):
 # -------------------------------------------------------------------------
 
 
+class TaskStage(mongoengine.Document):
+    """Task stage."""
+
+    meta = {'collection': 'task_history'}
+
+    celery_task_id = mongoengine.StringField(required=True)
+    stage_num = mongoengine.IntField(required=True)
+    stage_name = mongoengine.StringField(required=True)
+
+    start_time = mongoengine.DateTimeField(required=True)  # equal to create_time
+    latest_status = mongoengine.StringField(required=True)
+
+    finish_time = mongoengine.DateTimeField()
+    finish_status = mongoengine.StringField()
+
+    add_time = mongoengine.DateTimeField(default=datetime.now())
+    update_time = mongoengine.DateTimeField()
+
+    def clean(self):
+        """When save, set self.update_time."""
+        self.update_time = datetime.now()
+
+    def json_ui(self):
+        """Json object return to UI."""
+        ret = json.loads(self.to_json())
+
+        ret["_id"] = str(self.pk)
+
+        ret["create_time"] = ret["create_time"]["$date"]
+        if "finish_time" in ret:
+            ret["finish_time"] = ret["finish_time"]["$date"]
+
+        return ret
+
+
 class TaskHistory(mongoengine.Document):
     """Task history."""
 
@@ -245,7 +280,7 @@ class TaskHistory(mongoengine.Document):
     update_time = mongoengine.DateTimeField()
 
     def clean(self):
-        """When save, set self.add_time."""
+        """When save, set self.update_time."""
         self.update_time = datetime.now()
 
     def json_ui(self):

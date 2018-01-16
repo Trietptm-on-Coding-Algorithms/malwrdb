@@ -97,7 +97,7 @@ def analyze_ref_file_as_sample(ref_file_id):
 
     # x. everything checked! add to celery worker and mongodb TaskHistory
 
-    task_result = task_analyze_ref_file_as_sample.delay(ref_file_id)
+    task_result = task_analyze_ref_file_as_sample.apply_async(args=[ref_file_id, ], retry=False)
 
     task_history = TaskHistory()
     task_history.task_type = TASK_TYPE_ANALYZE_REFFILE_AS_SAMPLE
