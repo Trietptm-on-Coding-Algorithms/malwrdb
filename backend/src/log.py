@@ -3,6 +3,13 @@
 
 """Log func definations."""
 
+
+# -------------------------------------------------------------------------
+
+
+from models_log import LogLine
+
+
 # -------------------------------------------------------------------------
 
 
@@ -11,7 +18,6 @@ def log(file, info, level):
     print("[%s] : %s" % (level.upper(), info))
 
     try:
-        from models import LogLine
         log_ = LogLine()
         log_.file = file
         log_.info = info

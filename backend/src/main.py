@@ -17,8 +17,8 @@ import tasks
 import tasks_wrapper
 from log import log
 from utils import to_str, path_to_dirs
-from models import LogLine, Sample, RefFile, RefGroup, RefDir, RefFileBelongTo, SampleBelongTo
-
+from models import Sample, RefFile, RefGroup, RefDir, RefFileBelongTo, SampleBelongTo
+from models_log import LogLine
 
 # -------------------------------------------------------------------------
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/python3
 
-"""Mongodb Document definitions."""
+"""Mongodb Document definitions - basic stuff."""
 
 # -------------------------------------------------------------------------
 
@@ -10,29 +10,6 @@ import hashlib
 from datetime import datetime
 
 from flask_mongoengine import mongoengine
-
-
-# -------------------------------------------------------------------------
-
-
-class LogLine(mongoengine.Document):
-    """Log stuff."""
-
-    meta = {'collection': "log_line"}
-
-    file = mongoengine.StringField(required=True)
-    level = mongoengine.StringField(required=True)
-    info = mongoengine.StringField(required=True)
-
-    add_time = mongoengine.DateTimeField(default=datetime.now())
-
-    def json_ui(self):
-        """Json object return to UI."""
-        ret = json.loads(self.to_json())
-
-        del ret["_id"]
-
-        return ret
 
 
 # -------------------------------------------------------------------------
@@ -138,12 +115,20 @@ class Sample(mongoengine.Document):
     malware_family_list = mongoengine.ListField()
 
     analyze_time = mongoengine.DateTimeField()
-
+    add_time = mongoengine.DateTimeField(default=datetime.now())
     update_time = mongoengine.DateTimeField()
 
     def clean(self):
         """Update some."""
-        pass
+        if self._binary and len(self._binary) != 0:
+
+            self.sample_size = len(self._binary)
+            self.md5 = hashlib.md5(self._binary).hexdigest()
+            self.sha1 = hashlib.sha1(self._binary).hexdigest()
+            self.sha256 = hashlib.sha256(self._binary).hexdigest()
+            self.sha512 = hashlib.sha512(self._binary).hexdigest()
+        else:
+            self.sample_size = 0
 
     def to_filter(self):
         """What?."""
@@ -211,87 +196,6 @@ class RefFile(mongoengine.Document):
         ret["_id"] = str(self.pk)
         if "_binary" in ret:
             del ret["_binary"]
-
-        return ret
-
-
-# -------------------------------------------------------------------------
-
-
-class TaskStage(mongoengine.Document):
-    """Task stage."""
-
-    meta = {'collection': 'task_history'}
-
-    celery_task_id = mongoengine.StringField(required=True)
-    stage_num = mongoengine.IntField(required=True)
-    stage_name = mongoengine.StringField(required=True)
-
-    start_time = mongoengine.DateTimeField(required=True)  # equal to create_time
-    latest_status = mongoengine.StringField(required=True)
-
-    finish_time = mongoengine.DateTimeField()
-    finish_status = mongoengine.StringField()
-
-    add_time = mongoengine.DateTimeField(default=datetime.now())
-    update_time = mongoengine.DateTimeField()
-
-    def clean(self):
-        """When save, set self.update_time."""
-        self.update_time = datetime.now()
-
-    def json_ui(self):
-        """Json object return to UI."""
-        ret = json.loads(self.to_json())
-
-        ret["_id"] = str(self.pk)
-
-        ret["create_time"] = ret["create_time"]["$date"]
-        if "finish_time" in ret:
-            ret["finish_time"] = ret["finish_time"]["$date"]
-
-        return ret
-
-
-class TaskHistory(mongoengine.Document):
-    """Task history."""
-
-    meta = {'collection': 'task_history'}
-
-    celery_task_id = mongoengine.StringField(required=True)
-    task_type = mongoengine.StringField(required=True)
-    create_time = mongoengine.DateTimeField(required=True)
-    latest_status = mongoengine.StringField(required=True)
-
-    start_time = mongoengine.DateTimeField()
-    finish_time = mongoengine.DateTimeField()
-    finish_status = mongoengine.StringField()
-
-    # task_type: analyze_refFile_as_sample
-    ref_file_id = mongoengine.StringField()    # if analyze success, this will be set as none
-    sample_id = mongoengine.StringField()      # if anlyaze fail, this will not set
-    analyze_type = mongoengine.StringField()   #
-    fail_reason = mongoengine.StringField()    # if analyze fail, this describe why
-
-    # task_type: compare samples to find similarity
-    # ...
-
-    add_time = mongoengine.DateTimeField(default=datetime.now())
-    update_time = mongoengine.DateTimeField()
-
-    def clean(self):
-        """When save, set self.update_time."""
-        self.update_time = datetime.now()
-
-    def json_ui(self):
-        """Json object return to UI."""
-        ret = json.loads(self.to_json())
-
-        ret["_id"] = str(self.pk)
-
-        ret["create_time"] = ret["create_time"]["$date"]
-        if "finish_time" in ret:
-            ret["finish_time"] = ret["finish_time"]["$date"]
 
         return ret
 

@@ -16,7 +16,7 @@ To make this work, u need:
 from celery import Celery
 
 node_name = "celery@ubuntu"  # use default as the only node
-app_celery = Celery('tasks', broker='redis://localhost:6381/9', include=['tasks_define'])
+app_celery = Celery('tasks', broker='redis://localhost:6381/9', include=['tasks_analyze_pe'])
 app_celery.conf.result_backend = 'redis://localhost:6381/10'
 
 

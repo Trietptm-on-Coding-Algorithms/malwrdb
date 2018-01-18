@@ -18,8 +18,9 @@ import time
 from datetime import datetime
 
 import tasks
-from models import RefFile, TaskHistory
-from tasks_define import task_analyze_ref_file_as_sample
+from models import RefFile
+from models_task import TaskHistory
+from tasks_analyze_pe import task_analyze_ref_file_as_sample
 
 
 # -------------------------------------------------------------------------
