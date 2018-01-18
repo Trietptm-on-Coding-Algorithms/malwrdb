@@ -6,6 +6,7 @@ handler_bk
 *.pyc
 *.code-workspace
 *.sublime-project
-*sublime-workspace
+*.sublime-workspace
+*.sh
 test_samples
 
