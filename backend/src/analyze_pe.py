@@ -12,32 +12,11 @@ from celery.utils.log import get_task_logger
 
 from utils import to_str
 from models_task import TaskStage
-from models_pe import PeDosHeader, PeFileHeader, PeNtHeader, PeValueStructure, \
+from models_pe import PeDosHeader, PeFileHeader, PeNtHeader, set_pe_value_list_by_dict, \
     PeSection, PeImportDllItem, PeImportDllTable
 
 
 logger = get_task_logger(__name__)
-
-# -------------------------------------------------------------------------
-
-
-def set_pe_value_list_by_dict__with_offset(db_doc, dict_):
-    """Tricky."""
-    for k, v in dict_.items():
-        value = PeValueStructure()
-        value.name = k
-        value.offset_file = v["FileOffset"]
-        value.offset_mm = v["Offset"]
-        value.value_type = v["Value"].__class__.__name__
-        if value.value_type == "str":
-            value.value_str = v["Value"]
-        elif value.value_type == "int":
-            value.value_int = v["Value"]
-        else:
-            raise Exception("not supported value type!")
-        db_doc.character_value_list.append(value)
-    return db_doc
-
 
 # -------------------------------------------------------------------------
 
@@ -58,7 +37,7 @@ def analyze_pe_header(celery_task_id, pe, sample_tmp_id, stage_num):
 
         dos_header_db = PeDosHeader()
         dos_header_db.sample_id = sample_tmp_id
-        dos_header_db = set_pe_value_list_by_dict__with_offset(dos_header_db, dos_header)
+        dos_header_db = set_pe_value_list_by_dict(dos_header_db, dos_header)
         dos_header_db.save()
 
         # file_header
@@ -68,7 +47,7 @@ def analyze_pe_header(celery_task_id, pe, sample_tmp_id, stage_num):
 
         file_header_db = PeFileHeader()
         file_header_db.sample_id = sample_tmp_id
-        file_header_db = set_pe_value_list_by_dict__with_offset(file_header_db, file_header)
+        file_header_db = set_pe_value_list_by_dict(file_header_db, file_header)
         file_header_db.save()
 
         # nt_header
@@ -78,7 +57,7 @@ def analyze_pe_header(celery_task_id, pe, sample_tmp_id, stage_num):
 
         nt_header_db = PeNtHeader()
         nt_header_db.sample_id = sample_tmp_id
-        nt_header_db = set_pe_value_list_by_dict__with_offset(nt_header_db, nt_header)
+        nt_header_db = set_pe_value_list_by_dict(nt_header_db, nt_header)
         nt_header_db.save()
 
         # save stage to db
@@ -121,7 +100,7 @@ def analyze_pe_sections(celery_task_id, pe, sample_tmp_id, stage_num):
 
             section_db = PeSection()
             section_db.sample_id = sample_tmp_id
-            section_db = set_pe_value_list_by_dict__with_offset(section_db, section)
+            section_db = set_pe_value_list_by_dict(section_db, section)
             section_db.save()
 
         # stage
@@ -160,7 +139,7 @@ def analyze_pe_import_table(celery_task_id, pe, sample_tmp_id, stage_num):
 
                 struct = import_dll.struct.dump_dict()
                 struct.pop("Structure")
-                import_dll_db = set_pe_value_list_by_dict__with_offset(import_dll_db, struct)
+                import_dll_db = set_pe_value_list_by_dict(import_dll_db, struct)
 
                 for import_item in import_dll.imports:
 

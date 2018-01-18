@@ -4,23 +4,9 @@ class PeSample {
 
 class PeValueStructure {
   name: string;
-  fileOffset: number;
-  mmOffset: number;
+  offset_file: number;
+  offset_mm: number;
   value: string;
 }
 
-class PeDosHeader {
-  values_list: Array<PeValueStructure>;
-}
-
-
-class PeFileHeader{
-
-}
-
-class PeNtHeader{
-
-}
-
-
-export { PeSample, PeDosHeader, PeFileHeader, PeNtHeader }
+export { PeSample, PeValueStructure }

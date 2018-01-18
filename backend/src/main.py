@@ -9,6 +9,7 @@ import json
 import pprint
 import traceback
 
+import argparse
 from flask import Flask, request
 from flask_cors import CORS
 from flask_restful import Api, Resource
@@ -20,7 +21,7 @@ from log import log
 from utils import to_str, path_to_dirs
 from models import Sample, RefFile, RefGroup, RefDir, RefFileBelongTo, SampleBelongTo
 from models import recur_del_ref_dir, clear_documents
-from models_pe import clear_pe_documents
+from models_pe import clear_pe_documents, get_pe_value_list
 from models_log import LogLine
 
 # -------------------------------------------------------------------------
@@ -486,18 +487,42 @@ class PeAction(Resource):
 
         from models_pe import PeDosHeader, PeFileHeader, PeNtHeader
 
+        # dos header
+
         q_dos_header = PeDosHeader.objects(sample_id=sample_id)
         if q_dos_header.count() != 1:
             raise Exception("%d dos header found for sample_id %s" % (q_dos_header.count(), sample_id))
-        dos_header_db = q_dos_header[0]
-        dos_header = {}
-        for value_structure in dos_header_db.character_value_list:
-            pprint.pprint(value_structure)
+
+        dos_header = []
+        for value_structure in get_pe_value_list(q_dos_header[0]):
+            dos_header.append(value_structure.json_ui())
+
+        # file header
+
+        q_file_header = PeFileHeader.objects(sample_id=sample_id)
+        if q_file_header.count() != 1:
+            raise Exception("%d file header found for sample_id %s" % (q_file_header.count(), sample_id))
+
+        file_header = []
+        for value_structure in get_pe_value_list(q_file_header[0]):
+            file_header.append(value_structure.json_ui())
+
+        # nt header
+
+        q_nt_header = PeNtHeader.objects(sample_id=sample_id)
+        if q_nt_header.count() != 1:
+            raise Exception("%d nt header found for sample_id %s" % (q_nt_header.count(), sample_id))
+
+        nt_header = []
+        for value_structure in get_pe_value_list(q_nt_header[0]):
+            nt_header.append(value_structure.json_ui())
+
+        # combine
 
         ret = {}
-        # ret["dos_header"] = dos_header
-        # ret["file_header"] = file_header
-        # ret["nt_header"] = nt_header
+        ret["dos_header"] = dos_header
+        ret["file_header"] = file_header
+        ret["nt_header"] = nt_header
         return ret
 
     def get_section_info(self):
@@ -941,14 +966,23 @@ api.add_resource(TaskAction, '/task/')
 
 if __name__ == '__main__':
 
-    tasks_wrapper.retrieve_tasks_from_celery()
+    parser = argparse.ArgumentParser(description='start server config')
 
-    import threading
-    t = threading.Thread(target=tasks_wrapper.check_close_task_history)
-    t.start()
+    parser.add_argument('--notask', dest="is_no_task", action="store_true", help="is start server without any task stuff")
+
+    args = parser.parse_args()
+
+    if not args.is_no_task:
+
+        tasks_wrapper.retrieve_tasks_from_celery()
+
+        import threading
+        t = threading.Thread(target=tasks_wrapper.check_close_task_history)
+        t.start()
 
     app.run(debug=True)
 
-    t.join()
+    if not args.is_no_task:
+        t.join()
 
 # -------------------------------------------------------------------------

@@ -79,6 +79,17 @@ class PeValueStructure(mongoengine.EmbeddedDocument):
         else:
             raise Exception("invalid self.value_type!")
 
+    def json_ui(self):
+        """Json object return to UI."""
+        ret = {}
+
+        ret["name"] = self.name
+        ret["offset_file"] = self.offset_file
+        ret["offset_mm"] = self.offset_mm
+        ret["value"] = self.value()
+
+        return ret
+
 
 class PeDosHeader(PeBaseDocument):
     """PE Dos header."""
@@ -152,6 +163,29 @@ def clear_pe_documents(sample_id=None):
         PeNtHeader.object(sample_id=sample_id).delete()
         PeSection.object(sample_id=sample_id).delete()
         PeImportDllTable.object(sample_id=sample_id).delete()
+
+
+def set_pe_value_list_by_dict(db_doc, dict_):
+    """Tricky."""
+    for k, v in dict_.items():
+        value = PeValueStructure()
+        value.name = k
+        value.offset_file = v["FileOffset"]
+        value.offset_mm = v["Offset"]
+        value.value_type = v["Value"].__class__.__name__
+        if value.value_type == "str":
+            value.value_str = v["Value"]
+        elif value.value_type == "int":
+            value.value_int = v["Value"]
+        else:
+            raise Exception("not supported value type!")
+        db_doc.character_value_list.append(value)
+    return db_doc
+
+
+def get_pe_value_list(db_doc):
+    """Tricky."""
+    return sorted(db_doc.character_value_list, key=lambda v: v.offset_file)
 
 
 # -------------------------------------------------------------------------

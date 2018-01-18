@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { MaterialComponentModule } from '../../modules/material-component.module';
 
-import { PeSample, PeDosHeader, PeFileHeader, PeNtHeader } from '../../models/models-pe';
+import { PeSample, PeValueStructure } from '../../models/models-pe';
 import { ServerDataService } from '../../services/server-data.service';
 
 
@@ -10,14 +10,18 @@ import { ServerDataService } from '../../services/server-data.service';
   selector: 'pe-header',
   template: `
   <h1>Pe Header</h1>
+  <p *ngFor="let v of dosHeader">
+    <span>{{v.name}}</span>
+    <br/>
+  </p>
   `,
 })
 export class PeHeaderComponent implements OnInit {
   @Input() peSample: PeSample;
 
-  dosHeader: PeDosHeader;
-  fileHeader: PeFileHeader;
-  ntHeader: PeNtHeader;
+  dosHeader: Array<PeValueStructure>;
+  fileHeader: Array<PeValueStructure>;
+  ntHeader: Array<PeValueStructure>;
 
   constructor(private _svrdata: ServerDataService) { }
 
