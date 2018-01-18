@@ -48,6 +48,14 @@ import '../styles/headings.css';
 import { SampleUploadComponent } from './sample-upload/sample-upload.component';
 import { SampleListComponent } from './sample-list/sample-list.component';
 import { SampleDetailComponent } from './sample-detail/sample-detail.component';
+
+import { PeDetailComponent } from './sample-detail/pe-components/pe.component';
+import { PeSectionComponent } from './sample-detail/pe-components/pe-section.component';
+import { PeHeaderComponent } from './sample-detail/pe-components/pe-header.component';
+import { PeImportComponent } from './sample-detail/pe-components/pe-import.component';
+import { PeExportComponent } from './sample-detail/pe-components/pe-export.component';
+import { PeBehvFileComponent } from './sample-detail/pe-components/pe-behv-file.component';
+
 import { RefGroupComponent } from './sample-list/sub-components/ref-group.component';
 import { RefDirComponent } from './sample-list/sub-components/ref-dir.component';
 import { RefFileComponent } from './sample-list/sub-components/ref-file.component';
@@ -79,15 +87,24 @@ type StoreType = {
     NoContentComponent,
     XLargeDirective,
     TestComponent,
+
     SampleUploadComponent,
     SampleListComponent,
     SampleDetailComponent,
+
+    PeSectionComponent,
+    PeDetailComponent,
+    PeBehvFileComponent,
+    PeExportComponent,
+    PeImportComponent,
+    PeHeaderComponent,
+
     RefGroupComponent,
-      RefDirComponent,
-      RefFileComponent,
-      SampleComponent,
-      AdminLogComponent,
-      TaskListComponent,
+    RefDirComponent,
+    RefFileComponent,
+    SampleComponent,
+    AdminLogComponent,
+    TaskListComponent,
   ],
   /**
    * Import Angular's modules.
@@ -100,7 +117,7 @@ type StoreType = {
     HttpClientModule,
     UploadModule,
     MaterialComponentModule,
-      ContextMenuModule.forRoot(),
+    ContextMenuModule.forRoot(),
     NgbModule.forRoot(),
     ToastrModule.forRoot({
       timeOut: 3000,

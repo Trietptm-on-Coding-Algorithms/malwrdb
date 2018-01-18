@@ -207,7 +207,7 @@ def analyze_pe_export_table(celery_task_id, pe, sample_tmp_id, stage_num):
 
         if hasattr(pe, "DIRECTORY_ENTRY_EXPORT"):
 
-            logger.info(pprint.pformat(pe.DIRECTORY_ENTRY_EXPORT))
+            logger.error(pprint.pformat(pe.DIRECTORY_ENTRY_EXPORT))
 
             stage_db.finish_status = "success"
 

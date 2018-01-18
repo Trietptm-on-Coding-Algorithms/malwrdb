@@ -8,9 +8,9 @@ import { ServerDataService } from '../../services/server-data.service';
 @Component({
   selector: 'ref-file',
   template: `
-  <a href="" [contextMenu]="basicMenu">
-      {{ refFile.file_name }}
-  </a>
+  <div href="" [contextMenu]="basicMenu" style="border: 2px solid black">
+      <span>{{ refFile.file_name }}</span>
+  </div>
 
   <!-- RightClick menu to select actions -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">

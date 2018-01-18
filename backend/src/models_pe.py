@@ -138,13 +138,20 @@ class PeImportDllTable(PeBaseDocument):
 # -------------------------------------------------------------------------
 
 
-def clear_pe_documents():
-    """Drop all collection defined here."""
-    PeDosHeader.drop_collection()
-    PeFileHeader.drop_collection()
-    PeNtHeader.drop_collection()
-    PeSection.drop_collection()
-    PeImportDllTable.drop_collection()
+def clear_pe_documents(sample_id=None):
+    """Drop all collection defined here, or that related with sample."""
+    if not sample_id:
+        PeDosHeader.drop_collection()
+        PeFileHeader.drop_collection()
+        PeNtHeader.drop_collection()
+        PeSection.drop_collection()
+        PeImportDllTable.drop_collection()
+    else:
+        PeDosHeader.object(sample_id=sample_id).delete()
+        PeFileHeader.object(sample_id=sample_id).delete()
+        PeNtHeader.object(sample_id=sample_id).delete()
+        PeSection.object(sample_id=sample_id).delete()
+        PeImportDllTable.object(sample_id=sample_id).delete()
 
 
 # -------------------------------------------------------------------------

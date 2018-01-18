@@ -19,6 +19,7 @@ from tasks_util import connect_mongo
 from tasks_analyze import replace_ref_file_by_sample
 from defines import TASK_TYPE_ANALYZE_REFFILE_AS_SAMPLE
 from models import RefFile, Sample
+from models_pe import clear_pe_documents
 from analyze_pe import analyze_pe_header, analyze_pe_sections, analyze_pe_import_table, analyze_pe_export_table
 
 logger = get_task_logger(__name__)
@@ -87,11 +88,11 @@ def task_analyze_ref_file_as_sample(self, ref_file_id):
         replace_ref_file_by_sample(celery_task_id, sample_tmp_id, stage_num, ref_file)
 
     except:
-        # delete might already inserted documents
 
-        # delete tmp Sample
+        # delete tmp Sample, and delete might already inserted documents
 
         sample_tmp.delete()
+        clear_pe_documents(sample_tmp_id)
 
         logger.error("analze pe fail:")
         logger.error(traceback.format_exc())

@@ -6,6 +6,7 @@
 # -------------------------------------------------------------------------
 
 import json
+import pprint
 import traceback
 
 from flask import Flask, request
@@ -435,6 +436,115 @@ class TreeAction(Resource):
         return "success"
 
 
+class PeAction(Resource):
+    """Get or Set Pe info."""
+
+    # -------------------------------------------------------------------------
+    # Get
+
+    def get(self):
+        """Wrapper for self._get()."""
+        print("-" * 30 + "PE Action Get Start" + "-" * 30)
+        ret = self._get()
+        print(ret)
+        print("+" * 30 + "PE Action Get End" + "+" * 30)
+        return ret
+
+    def _get(self):
+        try:
+            action = request.args.get("action", None)
+            if not action:
+                raise Exception("no action provided!")
+
+            if action == "get_HeaderInfo":
+                return self.get_header_info()
+
+            if action == "get_SectionInfo":
+                return self.get_section_info()
+
+            if action == "get_ImportInfo":
+                return self.get_import_info()
+
+            if action == "get_ExportInfo":
+                return self.get_export_info()
+
+            if action == "get_BehvFileInfo":
+                return self.get_behv_file_info()
+
+            else:
+                raise Exception("invalid action: %s" % action)
+
+        except:
+            error(traceback.format_exc())
+            return "exception!"
+
+    def get_header_info(self):
+        """Get pe header info."""
+        sample_id = request.args.get("sample_id", None)
+        if not sample_id:
+            raise Exception("no sample id provided!")
+
+        from models_pe import PeDosHeader, PeFileHeader, PeNtHeader
+
+        q_dos_header = PeDosHeader.objects(sample_id=sample_id)
+        if q_dos_header.count() != 1:
+            raise Exception("%d dos header found for sample_id %s" % (q_dos_header.count(), sample_id))
+        dos_header_db = q_dos_header[0]
+        dos_header = {}
+        for value_structure in dos_header_db.character_value_list:
+            pprint.pprint(value_structure)
+
+        ret = {}
+        # ret["dos_header"] = dos_header
+        # ret["file_header"] = file_header
+        # ret["nt_header"] = nt_header
+        return ret
+
+    def get_section_info(self):
+        """Get pe section info."""
+        return "success"
+
+    def get_import_info(self):
+        """Get pe import info."""
+        return "success"
+
+    def get_export_info(self):
+        """Get pe export info."""
+        return "success"
+
+    def get_behv_file_info(self):
+        """Get pe behv file info."""
+        return "success"
+
+    # -------------------------------------------------------------------------
+    # Post
+
+    def post(self):
+        """Wrapper for self._post()."""
+        print("-" * 30 + "PE Action Set Start" + "-" * 30)
+        ret = self._post()
+        print(ret)
+        print("+" * 30 + "PE Action Set End" + "+" * 30)
+        return ret
+
+    def _post(self):
+        try:
+            args = json.loads(to_str(request.data))
+            if "action" not in args:
+                raise Exception("no action!")
+
+            action = args["action"]
+            if action == "":
+                pass
+
+            else:
+                raise Exception("invalid action: %s" % action)
+
+        except Exception as e:
+            error(traceback.format_exc())
+            return "exception:\n" + str(e)
+
+
 class SampleSimpleAction(Resource):
     """Some get handler for Sample."""
 
@@ -698,7 +808,7 @@ class SampleUpload(Resource):
         pass
 
 
-class RefFileActioin(Resource):
+class RefFileAction(Resource):
     """RefFile post handler."""
 
     def post(self):
@@ -819,7 +929,8 @@ api.add_resource(SetAction, '/')
 
 api.add_resource(TreeAction, '/tree/')
 
-api.add_resource(RefFileActioin, '/reffile/')
+api.add_resource(RefFileAction, '/reffile/')
+api.add_resource(PeAction, '/pe/')
 
 api.add_resource(SampleSimpleAction, '/sample/action/')
 api.add_resource(SampleUpload, '/sample/upload/')

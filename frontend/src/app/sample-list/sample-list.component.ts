@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
 
 import { MaterialComponentModule } from '../modules/material-component.module';
@@ -32,7 +32,7 @@ import { RefGroupComponent } from './ref-group/ref-group.component';
   `,
   styleUrls: ['./sample-list.component.css']
 })
-export class SampleListComponent implements OnInit {
+export class SampleListComponent {
   defaultPageSize = 10;
   pageSizeOptions = [5, 10, 25, 100];
 
@@ -47,7 +47,7 @@ export class SampleListComponent implements OnInit {
     private _shrdata: SharedDataService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(){
     this.getGroupList();
   }
 

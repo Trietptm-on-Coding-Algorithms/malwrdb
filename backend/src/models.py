@@ -141,9 +141,12 @@ class Sample(mongoengine.Document):
         """Json object return to UI."""
         ret = json.loads(self.to_json())
 
-        del ret["_id"]
+        # del ret["_id"]
+        ret["_id"] = str(self.pk)
+
         assert "_binary" in ret
         del ret["_binary"]
+
         return ret
 
 

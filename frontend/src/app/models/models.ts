@@ -15,6 +15,7 @@ class RefFile{
 }
 
 class Sample {
+    _id: string;
     sample_name: string;
     smaple_size: number;
 
