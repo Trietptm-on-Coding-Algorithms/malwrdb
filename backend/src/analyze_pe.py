@@ -149,16 +149,10 @@ def analyze_pe_import_table(celery_task_id, pe, sample_tmp_id, stage_num):
     stage_db.save()
 
     try:
-        # retrieve sections from pe
+        pe.parse_data_directories()
+        if hasattr(pe, "DIRECTORY_ENTRY_IMPORT"):
 
-        pe.parse_data_directories([0])
-        import_table = pe.DIRECTORY_ENTRY_IMPORT
-
-        if import_table:
-
-            # import table
-
-            for import_dll in import_table:
+            for import_dll in pe.DIRECTORY_ENTRY_IMPORT:
 
                 import_dll_db = PeImportDllTable()
                 import_dll_db.sample_id = sample_tmp_id
@@ -199,5 +193,40 @@ def analyze_pe_import_table(celery_task_id, pe, sample_tmp_id, stage_num):
 
         raise Exception("analyze pe import table")
 
+
+def analyze_pe_export_table(celery_task_id, pe, sample_tmp_id, stage_num):
+    """Analyze pe import table."""
+    stage_db = TaskStage()
+    stage_db.celery_task_id = celery_task_id
+    stage_db.stage_num = stage_num
+    stage_db.stage_name = "analyze pe export table"
+    stage_db.save()
+
+    try:
+        pe.parse_data_directories([1])
+
+        if hasattr(pe, "DIRECTORY_ENTRY_EXPORT"):
+
+            logger.info(pprint.pformat(pe.DIRECTORY_ENTRY_EXPORT))
+
+            stage_db.finish_status = "success"
+
+        else:
+
+            stage_db.finish_status = "no export table parsed!"
+
+        # stage
+
+        stage_db.finish_time = datetime.now()
+        stage_db.save()
+
+    except:
+        PeImportDllTable.objects(sample_id=sample_tmp_id).delete()
+
+        stage_db.finish_time = datetime.now()
+        stage_db.finish_status = "fail!"
+        stage_db.save()
+
+        raise Exception("analyze pe export table")
 
 # -------------------------------------------------------------------------

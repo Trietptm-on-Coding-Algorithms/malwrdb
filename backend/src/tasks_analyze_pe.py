@@ -17,7 +17,7 @@ from tasks import app_celery
 from tasks_util import connect_mongo
 from defines import TASK_TYPE_ANALYZE_REFFILE_AS_SAMPLE
 from models import RefFile, Sample
-from analyze_pe import analyze_pe_header, analyze_pe_sections, analyze_pe_import_table
+from analyze_pe import analyze_pe_header, analyze_pe_sections, analyze_pe_import_table, analyze_pe_export_table
 
 logger = get_task_logger(__name__)
 
@@ -66,6 +66,11 @@ def task_analyze_ref_file_as_sample(self, ref_file_id):
         # import table
         stage_num += 1
         analyze_pe_import_table(celery_task_id, pe, sample_tmp_id, stage_num)
+
+        # export table
+
+        stage_num += 1
+        analyze_pe_export_table(celery_task_id, pe, sample_tmp_id, stage_num)
 
         # x. del original RefFile and update some relationship
         # todo...
