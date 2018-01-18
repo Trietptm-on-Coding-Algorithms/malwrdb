@@ -87,5 +87,6 @@ export class RefDirComponent implements OnInit {
 
     delDir(){
         console.log("del dir");
+        this._svrdata.cmdDeleteRefDir(this.refDir._id);
     }
 }

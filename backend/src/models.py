@@ -97,12 +97,13 @@ class Sample(mongoengine.Document):
 
     _binary = mongoengine.BinaryField()
 
+    # automatically updated in self.save()
+    sample_size = mongoengine.IntField()
     md5 = mongoengine.StringField(max_length=32, min_length=32)
     sha1 = mongoengine.StringField(max_length=40, min_length=40)
     sha256 = mongoengine.StringField(max_length=64, min_length=64)
     sha512 = mongoengine.StringField(max_length=128, min_length=128)
 
-    sample_size = mongoengine.IntField()
     sample_file_type = mongoengine.StringField()
 
     ssdeep = mongoengine.StringField()
@@ -129,6 +130,8 @@ class Sample(mongoengine.Document):
             self.sha512 = hashlib.sha512(self._binary).hexdigest()
         else:
             self.sample_size = 0
+
+        self.update_time = datetime.now()
 
     def to_filter(self):
         """What?."""

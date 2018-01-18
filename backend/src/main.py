@@ -201,6 +201,66 @@ class Action(Resource):
             if not action:
                 raise Exception("no action provided!")
 
+            if action == "":
+                pass
+
+            else:
+                raise Exception("invalid action: %s" % action)
+
+        except:
+            error(traceback.format_exc())
+            return "exception!"
+
+
+class SetAction(Resource):
+    """Default post handler."""
+
+    def post(self):
+        """Wrapper of self._post()."""
+        print("-" * 30 + "Set Action Start" + "-" * 30)
+        ret = self._post()
+        print(ret)
+        print("+" * 30 + "Set Action End" + "+" * 30)
+        return ret
+
+    def _post(self):
+        try:
+            args = json.loads(to_str(request.data))
+            if "action" not in args:
+                raise Exception("no action!")
+
+            action = args["action"]
+            if action == "":
+                pass
+
+            else:
+                raise Exception("invalid action: %s" % action)
+
+        except Exception as e:
+            error(traceback.format_exc())
+            return "exception:\n" + str(e)
+
+
+class TreeAction(Resource):
+    """Get or Set THE tree."""
+
+    # -------------------------------------------------------------------------
+    # Get
+
+    def get(self):
+        """Wrapper for self._get()."""
+        print("-" * 30 + "Tree Action Get Start" + "-" * 30)
+        ret = self._get()
+        print(ret)
+        print("+" * 30 + "Tree Action Get End" + "+" * 30)
+        return ret
+
+    def _get(self):
+        try:
+            action = request.args.get("action", None)
+            if not action:
+                raise Exception("no action provided!")
+
             if action == "get_refGroupList":
                 return self.get_ref_group_list()
 
@@ -237,7 +297,9 @@ class Action(Resource):
         group_list = []
         for group in RefGroup.objects.order_by("-update_time").skip(page_index * page_size).limit(page_size):
             group_list.append(group.json_ui())
-        ret["group_list"] = group_list
+        # ret["group_list"] = group_list
+        # todo: test....
+        ret["group_list"] = group_list[:2]
 
         return ret
 
@@ -311,22 +373,21 @@ class Action(Resource):
         for file_belongto in RefFileBelongTo.objects(refDir=ref_dir_cur):
             q_ref_file = RefFile.objects(pk=file_belongto.ref_file_id)
             if q_ref_file.count() != 1:
-                raise Exception("no or too many refFile by ref_file_id")
+                raise Exception("no or too many refFile by ref_file_id: %d - %s" % (q_ref_file.count(), file_belongto.ref_file_id))
             ref_file = q_ref_file[0].json_ui()
             ref_file["file_name"] = file_belongto.file_name
             ret.append(ref_file)
         return ret
 
-
-class SetAction(Resource):
-    """Default post handler."""
+    # -------------------------------------------------------------------------
+    # Post
 
     def post(self):
-        """Wrapper of self._post()."""
-        print("-" * 30 + "Set Action Start" + "-" * 30)
+        """Wrapper for self._post()."""
+        print("-" * 30 + "Tree Action Set Start" + "-" * 30)
         ret = self._post()
         print(ret)
-        print("+" * 30 + "Set Action End" + "+" * 30)
+        print("+" * 30 + "Tree Action Set End" + "+" * 30)
         return ret
 
     def _post(self):
@@ -336,8 +397,8 @@ class SetAction(Resource):
                 raise Exception("no action!")
 
             action = args["action"]
-            if action == "":
-                pass
+            if action == "deleteRefDir":
+                return self.del_ref_dir(args)
 
             else:
                 raise Exception("invalid action: %s" % action)
@@ -345,6 +406,10 @@ class SetAction(Resource):
         except Exception as e:
             error(traceback.format_exc())
             return "exception:\n" + str(e)
+
+    def del_ref_dir(self, args):
+        """Delete RefDir and it's sub contents."""
+        pass
 
 
 class SampleSimpleAction(Resource):
@@ -724,10 +789,12 @@ class TaskAction(Resource):
 
 api.add_resource(TestAction, '/test/')
 
+api.add_resource(LogLineAction, '/logline/')
+
 api.add_resource(Action, '/action/')
 api.add_resource(SetAction, '/')
 
-api.add_resource(LogLineAction, '/logline/')
+api.add_resource(TreeAction, '/tree/')
 
 api.add_resource(RefFileActioin, '/reffile/')
 

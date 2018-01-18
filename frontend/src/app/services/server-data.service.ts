@@ -47,7 +47,7 @@ export class ServerDataService {
         params = params.append("pageSize", `${pageSize}`);
         params = params.append("pageIndex", `${pageIndex}`);
 
-        return this._http.get<RefGroup[]>(this.baseUrl + "/action/", { params: params });
+        return this._http.get<RefGroup[]>(this.baseUrl + "/tree/", { params: params });
     }
 
     // get top refDir by group_id
@@ -57,7 +57,7 @@ export class ServerDataService {
 
         params = params.append("group_id", group_id);
 
-        return this._http.get<RefDir[]>(this.baseUrl + "/action/", { params: params });
+        return this._http.get<RefDir[]>(this.baseUrl + "/tree/", { params: params });
     }
 
     // get sub RefDir by RefDirId
@@ -67,7 +67,7 @@ export class ServerDataService {
 
         params = params.append("refDir_id", refDir_id);
 
-        return this._http.get<RefDir[]>(this.baseUrl + "/action/", { params: params });
+        return this._http.get<RefDir[]>(this.baseUrl + "/tree/", { params: params });
     }
 
     // get sub Sample by RefDirId
@@ -77,7 +77,7 @@ export class ServerDataService {
 
         params = params.append("refDir_id", refDir_id);
 
-        return this._http.get<Sample[]>(this.baseUrl + "/action/", { params: params });
+        return this._http.get<Sample[]>(this.baseUrl + "/tree/", { params: params });
     }
 
 
@@ -88,7 +88,15 @@ export class ServerDataService {
 
         params = params.append("refDir_id", refDir_id);
 
-        return this._http.get<RefFile[]>(this.baseUrl + "/action/", { params: params });
+        return this._http.get<RefFile[]>(this.baseUrl + "/tree/", { params: params });
+    }
+
+    // del ref dir
+    cmdDeleteRefDir(refDir_id: string) {
+        this._http.post(this.baseUrl + "/tree/", {
+            "action": "deleteRefDir",
+            "refDirId": refDir_id
+        }).subscribe();
     }
 
     // -----------------------------------------------------------------------------------
@@ -99,7 +107,7 @@ export class ServerDataService {
     cmdAnalyzeSample(refFile_id: string) {
         this._http.post(this.baseUrl + "/reffile/", {
             "action": "analyzeAsSample",
-            "refFileId": refFile_id,
+            "refFileId": refFile_id
         }).subscribe();
     }
 
