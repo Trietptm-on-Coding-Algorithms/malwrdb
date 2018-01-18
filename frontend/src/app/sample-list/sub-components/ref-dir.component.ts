@@ -44,7 +44,7 @@ import { SampleComponent } from './sample.component';
 
 export class RefDirComponent implements OnInit {
   @Input() refDir: RefDir;
-    @ViewChild(ContextMenuComponent) basicMenu: ContextMenuComponent;
+  @ViewChild(ContextMenuComponent) basicMenu: ContextMenuComponent;
 
   subRefDirs: RefDir[];
   subSamples: Sample[];
@@ -53,40 +53,43 @@ export class RefDirComponent implements OnInit {
   constructor(private _svrdata: ServerDataService) { }
 
   ngOnInit() {
-      // console.log("id:" + this.refDir._id);
-      this._svrdata.getSubRefDirs(this.refDir._id).subscribe(
-        v => {
-          this.subRefDirs = v;
-        },
-        e => { console.log("getSubRefDirs error: " + e); },
-        () => { }
-      );
-      this._svrdata.getSubSamples(this.refDir._id).subscribe(
-          v => {
-            this.subSamples = v;
-          },
-          e => { console.log("getSubSamples error: " + e); },
-          () => { }
-      );
-      this._svrdata.getSubRefFiles(this.refDir._id).subscribe(
-          v => {
-            this.subRefFiles = v;
-          },
-          e => { console.log("getSubRefFiles error: " + e); },
-          () => { }
-      );
+    // console.log("id:" + this.refDir._id);
+    this._svrdata.getSubRefDirs(this.refDir._id).subscribe(
+      v => {
+        this.subRefDirs = v;
+      },
+      e => { console.log("getSubRefDirs error: " + e); },
+      () => { }
+    );
+    this._svrdata.getSubSamples(this.refDir._id).subscribe(
+      v => {
+        this.subSamples = v;
+      },
+      e => { console.log("getSubSamples error: " + e); },
+      () => { }
+    );
+    this._svrdata.getSubRefFiles(this.refDir._id).subscribe(
+      v => {
+        this.subRefFiles = v;
+      },
+      e => { console.log("getSubRefFiles error: " + e); },
+      () => { }
+    );
   }
 
-    addFiles(){
-        console.log("add files to dir");
-    }
+  addFiles() {
+    console.log("add files to dir");
+  }
 
-    renameDir(){
-        console.log("rename dir");
-    }
+  renameDir() {
+    console.log("rename dir");
+  }
 
-    delDir(){
-        console.log("del dir");
-        this._svrdata.cmdDeleteRefDir(this.refDir._id);
-    }
+  delDir() {
+    console.log("del dir");
+    this._svrdata.cmdDeleteRefDir(this.refDir._id).subscribe(
+      v => {
+        // todo: reload
+      });
+  }
 }

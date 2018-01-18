@@ -8,11 +8,11 @@ import { ServerDataService } from '../../services/server-data.service';
 @Component({
   selector: 'sample',
   template: `
-    <a href="" [contextMenu]="basicMenu">{{ sample.sample_name }}</a>
+    <a href="" style="background-color: yellow" [contextMenu]="basicMenu">{{ sample.sample_name }}</a>
 
     <!-- RightClick menu to select actions -->
     <context-menu>
-      <ng-template contextMenuItem (execute)="convertToRefFile()">As reference file!</ng-template>
+      <ng-template contextMenuItem (execute)="convertToRefFile()">Convert to reference file!</ng-template>
       <ng-template contextMenuItem (execute)="renameSample()">Rename</ng-template>
       <ng-template contextMenuItem (execute)="delSample()">Delete</ng-template>
     </context-menu>

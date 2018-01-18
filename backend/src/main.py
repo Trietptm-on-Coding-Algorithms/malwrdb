@@ -18,6 +18,8 @@ import tasks_wrapper
 from log import log
 from utils import to_str, path_to_dirs
 from models import Sample, RefFile, RefGroup, RefDir, RefFileBelongTo, SampleBelongTo
+from models import recur_del_ref_dir, clear_documents
+from models_pe import clear_pe_documents
 from models_log import LogLine
 
 # -------------------------------------------------------------------------
@@ -311,12 +313,12 @@ class TreeAction(Resource):
 
         q_group = RefGroup.objects(group_id=group_id)
         if q_group.count() != 1:
-            raise Exception("no or too many group by group_id")
+            raise Exception("%d refGroup found by group_id %s" % (q_group.count(), group_id))
         group = q_group[0]
 
         q_dir = RefDir.objects(refGroup=group, parnetRefDir=None)
         if q_dir.count() != 1:
-            raise Exception("no or too many top RefDir by group_id")
+            raise Exception("no or too many top RefDir in group_id")
 
         # return a list, instead of standalone obj, to make it easier for frontend
         return [q_dir[0].json_ui()]
@@ -373,7 +375,7 @@ class TreeAction(Resource):
         for file_belongto in RefFileBelongTo.objects(refDir=ref_dir_cur):
             q_ref_file = RefFile.objects(pk=file_belongto.ref_file_id)
             if q_ref_file.count() != 1:
-                raise Exception("no or too many refFile by ref_file_id: %d - %s" % (q_ref_file.count(), file_belongto.ref_file_id))
+                raise Exception("%d refFile by ref_file_id: %s" % (q_ref_file.count(), file_belongto.ref_file_id))
             ref_file = q_ref_file[0].json_ui()
             ref_file["file_name"] = file_belongto.file_name
             ret.append(ref_file)
@@ -400,6 +402,9 @@ class TreeAction(Resource):
             if action == "deleteRefDir":
                 return self.del_ref_dir(args)
 
+            elif action == "clearTree":
+                return self.clear_tree(args)
+
             else:
                 raise Exception("invalid action: %s" % action)
 
@@ -409,7 +414,25 @@ class TreeAction(Resource):
 
     def del_ref_dir(self, args):
         """Delete RefDir and it's sub contents."""
-        pass
+        if "refDirId" not in args:
+            raise Exception("no ref dir id provided!")
+        ref_dir_id = args["refDirId"]
+
+        q_ref_dir = RefDir.objects(pk=ref_dir_id)
+        if q_ref_dir.count() != 1:
+            raise Exception("0 or more than 1 ref dir by ref_dir_id")
+        ref_dir = q_ref_dir[0]
+
+        recur_del_ref_dir(ref_dir)
+
+        return "delete ref dir success"
+
+    def clear_tree(self, args):
+        """Clear this tree."""
+        clear_documents()
+        clear_pe_documents()
+
+        return "success"
 
 
 class SampleSimpleAction(Resource):

@@ -93,10 +93,16 @@ export class ServerDataService {
 
     // del ref dir
     cmdDeleteRefDir(refDir_id: string) {
-        this._http.post(this.baseUrl + "/tree/", {
+        return this._http.post(this.baseUrl + "/tree/", {
             "action": "deleteRefDir",
             "refDirId": refDir_id
-        }).subscribe();
+        });
+    }
+
+    cmdClearTree() {
+        return this._http.post(this.baseUrl + "/tree/", {
+            "action": "clearTree",
+        });
     }
 
     // -----------------------------------------------------------------------------------

@@ -13,6 +13,12 @@ import { RefGroupComponent } from './ref-group/ref-group.component';
 @Component({
   selector: 'sample-list',
   template: `
+  <mat-toolbar color="primary">
+    <mat-toolbar-row>
+      <button mat-raised-button color="warn" (click)="clearTree($event)">DeleteTree</button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+
   <div *ngFor="let group of showGroupList">
       <ref-group [refGroup]="group"></ref-group>
       <br/>
@@ -61,8 +67,16 @@ export class SampleListComponent implements OnInit {
       }
     );
   }
+
   // reload groupList
   reload(evt: any) {
     this.getGroupList(evt.pageSize, evt.pageIndex);
+  }
+
+  clearTree(evt: any) {
+    this._svrdata.cmdClearTree().subscribe(
+      v => {
+        this.getGroupList();
+      });
   }
 }

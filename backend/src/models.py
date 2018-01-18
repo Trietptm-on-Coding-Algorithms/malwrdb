@@ -20,7 +20,7 @@ class RefGroup(mongoengine.Document):
 
     meta = {'collection': "ref_group"}
 
-    group_id = mongoengine.StringField(required=True)
+    group_id = mongoengine.StringField(required=True)   # random gened string
 
     add_time = mongoengine.DateTimeField(default=datetime.now())
     update_time = mongoengine.DateTimeField()
@@ -201,6 +201,61 @@ class RefFile(mongoengine.Document):
             del ret["_binary"]
 
         return ret
+
+
+# -------------------------------------------------------------------------
+
+
+def clear_documents():
+    """Drop collections defined here."""
+    RefGroup.drop_collection()
+    RefDir.drop_collection()
+    SampleBelongTo.drop_collection()
+    Sample.drop_collection()
+    RefFileBelongTo.drop_collection()
+    RefFile.drop_collection()
+
+
+def recur_del_ref_dir(ref_dir):
+    """Del refDir and it's sub contents recurly."""
+    # sub dir
+    for sub_dir in RefDir.objects(parnetRefDir=ref_dir):
+        recur_del_ref_dir(sub_dir)
+
+    # sub file
+    for file_belong_to in RefFileBelongTo.objects(refDir=ref_dir):
+        if RefFileBelongTo.objects(ref_file_id=file_belong_to.pk).count() == 1:
+
+            # this file belong to this dir "only", so we need del it
+
+            q_file = RefFile.objects(pk=file_belong_to.ref_file_id)
+            if q_file.count() != 1:
+                raise Exception("e...this is embarssing, 0 or more than 1 ref file")
+
+            q_file.delete()
+
+    RefFileBelongTo.objects(refDir=ref_dir).delete()
+
+    # sub sample
+    for sample_belong_to in SampleBelongTo.objects(refDir=ref_dir):
+        if SampleBelongTo.objects(sample_id=sample_belong_to.sample_id).count() == 1:
+
+            # this sample belong to this dir "only", so we need del it
+
+            q_sample = Sample.objects(pk=sample_belong_to.sample_id)
+            if q_sample.count() != 1:
+                raise Exception("e...this is embarssing, 0 or more than 1 sample")
+
+    SampleBelongTo.objects(refDir=ref_dir).delete()
+
+    # if dir is topDir, delete RefGroup also
+    if "parnetRefDir" not in ref_dir:
+        if RefDir.objects(refGroup=ref_dir.refGroup).count() != 1:
+            raise Exception("suspecious topDir, no parnetRefDir, but 0 or more than 1 refDir with same RefGroup")
+        ref_dir.refGroup.delete()
+
+    # self del
+    ref_dir.delete()
 
 
 # -------------------------------------------------------------------------

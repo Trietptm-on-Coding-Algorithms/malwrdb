@@ -10,9 +10,12 @@
 
 from datetime import datetime
 
+from celery.utils.log import get_task_logger
+
 from models import RefFileBelongTo, SampleBelongTo
 from models_task import TaskStage
 
+logger = get_task_logger(__name__)
 
 # -------------------------------------------------------------------------
 
@@ -20,7 +23,7 @@ from models_task import TaskStage
 def replace_ref_file_by_sample(celery_task_id, sample_tmp_id, stage_num, ref_file):
     """Let Sample has same relationship with RefFile, then Delete RefFile and it's relationships."""
     # inherit all relationships
-    for file_belong_to in RefFileBelongTo.objects(ref_file_id=ref_file.pk):
+    for file_belong_to in RefFileBelongTo.objects(ref_file_id=str(ref_file.pk)):
 
         stage_num += 1
         stage_db = TaskStage()
@@ -67,7 +70,7 @@ def replace_ref_file_by_sample(celery_task_id, sample_tmp_id, stage_num, ref_fil
     try:
 
         ref_file.delete()
-        RefFileBelongTo.objects(ref_file_id=ref_file.pk).delete()
+        RefFileBelongTo.objects(ref_file_id=str(ref_file.pk)).delete()
 
         stage_db.finish_time = datetime.now()
         stage_db.finish_status = "success"

@@ -48,8 +48,6 @@ class PeBaseDocument(mongoengine.Document):
 class PeValueStructure(mongoengine.EmbeddedDocument):
     """Base of name->value structure."""
 
-    meta = {'allow_inheritance': True}
-
     name = mongoengine.StringField(required=True)
     value_type = mongoengine.StringField(required=True)
     offset_file = mongoengine.IntField(required=True)
@@ -135,6 +133,18 @@ class PeImportDllTable(PeBaseDocument):
     dll_name = mongoengine.StringField(required=True)
     import_item_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeImportDllItem))
     character_value_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeValueStructure))
+
+
+# -------------------------------------------------------------------------
+
+
+def clear_pe_documents():
+    """Drop all collection defined here."""
+    PeDosHeader.drop_collection()
+    PeFileHeader.drop_collection()
+    PeNtHeader.drop_collection()
+    PeSection.drop_collection()
+    PeImportDllTable.drop_collection()
 
 
 # -------------------------------------------------------------------------

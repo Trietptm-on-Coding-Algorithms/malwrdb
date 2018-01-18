@@ -17,7 +17,7 @@ from flask_mongoengine import mongoengine
 class TaskStage(mongoengine.Document):
     """Task stage."""
 
-    meta = {'collection': 'task_history'}
+    meta = {'collection': 'task_stage'}
 
     celery_task_id = mongoengine.StringField(required=True)
     stage_num = mongoengine.IntField(required=True)
