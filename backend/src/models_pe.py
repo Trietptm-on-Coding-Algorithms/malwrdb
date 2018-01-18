@@ -45,13 +45,15 @@ class PeBaseDocument(mongoengine.Document):
 # -------------------------------------------------------------------------
 
 
-class PeValueStructureBase(mongoengine.EmbeddedDocument):
+class PeValueStructure(mongoengine.EmbeddedDocument):
     """Base of name->value structure."""
 
     meta = {'allow_inheritance': True}
 
     name = mongoengine.StringField(required=True)
     value_type = mongoengine.StringField(required=True)
+    offset_file = mongoengine.IntField(required=True)
+    offset_mm = mongoengine.IntField(required=True)
 
     value_int = mongoengine.IntField()
     value_str = mongoengine.StringField()
@@ -80,19 +82,12 @@ class PeValueStructureBase(mongoengine.EmbeddedDocument):
             raise Exception("invalid self.value_type!")
 
 
-class PeValueStructureWithOffset(PeValueStructureBase):
-    """PE value structure."""
-
-    offset_file = mongoengine.IntField(required=True)
-    offset_mm = mongoengine.IntField(required=True)
-
-
 class PeDosHeader(PeBaseDocument):
     """PE Dos header."""
 
     meta = {'collection': "pe_dos_header"}
 
-    character_value_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeValueStructureWithOffset))
+    character_value_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeValueStructure))
 
 
 class PeFileHeader(PeBaseDocument):
@@ -100,7 +95,7 @@ class PeFileHeader(PeBaseDocument):
 
     meta = {'collection': "pe_file_header"}
 
-    character_value_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeValueStructureWithOffset))
+    character_value_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeValueStructure))
 
 
 class PeNtHeader(PeBaseDocument):
@@ -108,7 +103,7 @@ class PeNtHeader(PeBaseDocument):
 
     meta = {'collection': "pe_nt_header"}
 
-    character_value_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeValueStructureWithOffset))
+    character_value_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeValueStructure))
 
 
 class PeSection(PeBaseDocument):
@@ -116,7 +111,7 @@ class PeSection(PeBaseDocument):
 
     meta = {'collection': "pe_section"}
 
-    character_value_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeValueStructureBase))
+    character_value_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeValueStructure))
 
 
 class PeImportDllItem(mongoengine.EmbeddedDocument):
@@ -139,7 +134,7 @@ class PeImportDllTable(PeBaseDocument):
 
     dll_name = mongoengine.StringField(required=True)
     import_item_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeImportDllItem))
-    character_value_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeValueStructureWithOffset))
+    character_value_list = mongoengine.ListField(mongoengine.EmbeddedDocumentField(PeValueStructure))
 
 
 # -------------------------------------------------------------------------
