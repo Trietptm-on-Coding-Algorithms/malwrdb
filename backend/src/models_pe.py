@@ -188,4 +188,11 @@ def get_pe_value_list(db_doc):
     return sorted(db_doc.character_value_list, key=lambda v: v.offset_file)
 
 
+def pe_value_list_to_dict(db_doc):
+    """Convert pe value list to a pe value dict."""
+    ret = {}
+    for value_structure in db_doc.character_value_list:
+        ret[value_structure.name] = value_structure.value()
+    return ret
+
 # -------------------------------------------------------------------------

@@ -9,4 +9,19 @@ class PeValueStructure {
   value: string;
 }
 
-export { PeSample, PeValueStructure }
+class PeSection{
+  Characteristics: string;
+  Misc: string;
+  Misc_PhysicalAddress: string;
+  Misc_VirtualSize: string;
+  Name: string;
+  NumberOfLinenumbers: string;
+  NumberOfRelocations: string;
+  PointerToLinenumbers: string;
+  PointerToRawData: string;
+  PointerToRelocations: string;
+  SizeOfRawData: string;
+  VirtualAddress: string;
+}
+
+export { PeSample, PeValueStructure, PeSection }

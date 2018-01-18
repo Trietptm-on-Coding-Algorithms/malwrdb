@@ -6,8 +6,8 @@
 # -------------------------------------------------------------------------
 
 import json
-import pprint
 import traceback
+from pprint import pprint
 
 import argparse
 from flask import Flask, request
@@ -21,7 +21,7 @@ from log import log
 from utils import to_str, path_to_dirs
 from models import Sample, RefFile, RefGroup, RefDir, RefFileBelongTo, SampleBelongTo
 from models import recur_del_ref_dir, clear_documents
-from models_pe import clear_pe_documents, get_pe_value_list
+from models_pe import clear_pe_documents, get_pe_value_list, pe_value_list_to_dict
 from models_log import LogLine
 
 # -------------------------------------------------------------------------
@@ -76,7 +76,7 @@ class TestAction(Resource):
         """Wrapper for self._get()."""
         print("-" * 30 + "Test Action Get Start" + "-" * 30)
         ret = self._get()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "Test Action Get End" + "+" * 30)
         return ret
 
@@ -102,7 +102,7 @@ class TestAction(Resource):
         """Wrapper of self._post()."""
         print("-" * 30 + "Test Action Set Start" + "-" * 30)
         ret = self._post()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "Test Action Set End" + "+" * 30)
         return ret
 
@@ -144,7 +144,7 @@ class LogLineAction(Resource):
         """Wrapper for self._get()."""
         print("-" * 30 + "LogLine Action Start" + "-" * 30)
         ret = self._get()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "LogLine Action End" + "+" * 30)
         return ret
 
@@ -195,7 +195,7 @@ class Action(Resource):
         """Wrapper for self._get()."""
         print("-" * 30 + "Action Start" + "-" * 30)
         ret = self._get()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "Action End" + "+" * 30)
         return ret
 
@@ -223,7 +223,7 @@ class SetAction(Resource):
         """Wrapper of self._post()."""
         print("-" * 30 + "Set Action Start" + "-" * 30)
         ret = self._post()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "Set Action End" + "+" * 30)
         return ret
 
@@ -255,7 +255,7 @@ class TreeAction(Resource):
         """Wrapper for self._get()."""
         print("-" * 30 + "Tree Action Get Start" + "-" * 30)
         ret = self._get()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "Tree Action Get End" + "+" * 30)
         return ret
 
@@ -390,7 +390,7 @@ class TreeAction(Resource):
         """Wrapper for self._post()."""
         print("-" * 30 + "Tree Action Set Start" + "-" * 30)
         ret = self._post()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "Tree Action Set End" + "+" * 30)
         return ret
 
@@ -447,7 +447,7 @@ class PeAction(Resource):
         """Wrapper for self._get()."""
         print("-" * 30 + "PE Action Get Start" + "-" * 30)
         ret = self._get()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "PE Action Get End" + "+" * 30)
         return ret
 
@@ -527,7 +527,21 @@ class PeAction(Resource):
 
     def get_section_info(self):
         """Get pe section info."""
-        return "success"
+        sample_id = request.args.get("sample_id", None)
+        if not sample_id:
+            raise Exception("no sample id provided!")
+
+        from models_pe import PeSection
+
+        q_section = PeSection.objects(sample_id=sample_id)
+        if q_section.count() == 0:
+            raise Exception("0 section found for sample_id %s" % sample_id)
+
+        ret = []
+        for section in q_section:
+            ret.append(pe_value_list_to_dict(section))
+
+        return ret
 
     def get_import_info(self):
         """Get pe import info."""
@@ -548,7 +562,7 @@ class PeAction(Resource):
         """Wrapper for self._post()."""
         print("-" * 30 + "PE Action Set Start" + "-" * 30)
         ret = self._post()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "PE Action Set End" + "+" * 30)
         return ret
 
@@ -632,7 +646,7 @@ class SampleUpload(Resource):
         """Wrapper for self._post()."""
         print("-" * 30 + "Sample Upload Start" + "-" * 30)
         ret = self._post()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "Sample Upload End" + "+" * 30)
         return ret
 
@@ -840,7 +854,7 @@ class RefFileAction(Resource):
         """Wrapper of self._post()."""
         print("-" * 30 + "RefFile Action Start" + "-" * 30)
         ret = self._post()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "RefFile Action End" + "+" * 30)
         return ret
 
@@ -879,7 +893,7 @@ class TaskAction(Resource):
         """Wrapper for self._get()."""
         print("-" * 30 + "Task Action Get Start" + "-" * 30)
         ret = self._get()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "Task Action Get End" + "+" * 30)
         return ret
 
@@ -914,7 +928,7 @@ class TaskAction(Resource):
         """Wrapper of self._post()."""
         print("-" * 30 + "Task Action Set Start" + "-" * 30)
         ret = self._post()
-        print(ret)
+        pprint(ret)
         print("+" * 30 + "Task Action Set End" + "+" * 30)
         return ret
 
