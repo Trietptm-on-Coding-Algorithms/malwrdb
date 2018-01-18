@@ -55,6 +55,7 @@ import { PeHeaderComponent } from './sample-detail/pe-components/pe-header.compo
 import { PeImportComponent } from './sample-detail/pe-components/pe-import.component';
 import { PeExportComponent } from './sample-detail/pe-components/pe-export.component';
 import { PeBehvFileComponent } from './sample-detail/pe-components/pe-behv-file.component';
+import { PeValueTableComponent } from './sample-detail/pe-components/pe-value-table.component';
 
 import { RefGroupComponent } from './sample-list/sub-components/ref-group.component';
 import { RefDirComponent } from './sample-list/sub-components/ref-dir.component';
@@ -95,6 +96,7 @@ type StoreType = {
     PeSectionComponent,
     PeDetailComponent,
     PeBehvFileComponent,
+    PeValueTableComponent,
     PeExportComponent,
     PeImportComponent,
     PeHeaderComponent,
