@@ -24,4 +24,18 @@ class PeSection{
   VirtualAddress: string;
 }
 
-export { PeSample, PeValueStructure, PeSection }
+class PeImportDllItem{
+  ordinal: number;
+  name: string;
+  bound: string;
+}
+
+class PeImportDllTable{
+  dll_name: string;
+  item_list: Array<PeImportDllItem>;
+  value_dict: Array<PeValueStructure>;
+}
+
+
+
+export { PeSample, PeValueStructure, PeSection, PeImportDllTable }

@@ -126,14 +126,18 @@ class PeSection(PeBaseDocument):
 class PeImportDllItem(mongoengine.EmbeddedDocument):
     """Pe Import table item."""
 
-    meta = {
-        'allow_inheritance': True,
-        'abstract': True
-    }
-
-    ordinal = mongoengine.IntField(required=True)
     name = mongoengine.StringField(required=True)
+    ordinal = mongoengine.IntField()
     bound = mongoengine.StringField()
+
+    def json_ui(self):
+        """Json object return to UI."""
+        ret = json.loads(self.to_json())
+
+        # no "_id" here, because no self.save() invoked!
+        # del ret["_id"]
+
+        return ret
 
 
 class PeImportDllTable(PeBaseDocument):
@@ -158,11 +162,11 @@ def clear_pe_documents(sample_id=None):
         PeSection.drop_collection()
         PeImportDllTable.drop_collection()
     else:
-        PeDosHeader.object(sample_id=sample_id).delete()
-        PeFileHeader.object(sample_id=sample_id).delete()
-        PeNtHeader.object(sample_id=sample_id).delete()
-        PeSection.object(sample_id=sample_id).delete()
-        PeImportDllTable.object(sample_id=sample_id).delete()
+        PeDosHeader.objects(sample_id=sample_id).delete()
+        PeFileHeader.objects(sample_id=sample_id).delete()
+        PeNtHeader.objects(sample_id=sample_id).delete()
+        PeSection.objects(sample_id=sample_id).delete()
+        PeImportDllTable.objects(sample_id=sample_id).delete()
 
 
 def set_pe_value_list_by_dict(db_doc, dict_):

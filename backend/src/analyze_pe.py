@@ -141,14 +141,23 @@ def analyze_pe_import_table(celery_task_id, pe, sample_tmp_id, stage_num):
                 struct.pop("Structure")
                 import_dll_db = set_pe_value_list_by_dict(import_dll_db, struct)
 
+                # import_dll_db.import_item_list = []
+
                 for import_item in import_dll.imports:
 
+                    logger.error(import_item.name)
+
                     import_item_db = PeImportDllItem()
-                    import_item_db.name = import_item.name
+                    import_item_db.name = to_str(import_item.name)
                     import_item_db.ordinal = import_item.ordinal
                     import_item_db.bound = import_item.bound
 
-                    # logger.info(pprint.pformat(import_item_db))
+                    if import_item.name:
+                        import_dll_db.import_item_list.append(import_item_db)
+                    else:
+                        logger.error("import item has none name for dll %s" % import_dll.dll)
+
+                    logger.error(len(import_dll_db.import_item_list))
 
                 import_dll_db.save()
 

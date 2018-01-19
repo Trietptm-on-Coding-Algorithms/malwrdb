@@ -5,6 +5,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from 'rxjs/Observable';
 
 import { LogLine, RefGroup, RefDir, RefFile, Sample, ActiveTask, HistoryTask } from '../models/models'
+import { PeSection, PeImportDllTable } from '../models/models-pe';
 
 @Injectable()
 export class ServerDataService {
@@ -147,21 +148,21 @@ export class ServerDataService {
   }
 
   // get header info
-  getPeSectionInfo(sample_id: string): Observable<any[]>{
+  getPeSectionInfo(sample_id: string): Observable<PeSection[]>{
       let params = new HttpParams();
       params = params.append("action", 'get_SectionInfo');
       params = params.append("sample_id", sample_id);
 
-      return this._http.get<any[]>(this.baseUrl + "/pe/", { params: params });
+      return this._http.get<PeSection[]>(this.baseUrl + "/pe/", { params: params });
   }
 
   // get header info
-  getPeImportInfo(sample_id: string): Observable<any[]>{
+  getPeImportInfo(sample_id: string): Observable<PeImportDllTable[]>{
       let params = new HttpParams();
       params = params.append("action", 'get_ImportInfo');
       params = params.append("sample_id", sample_id);
 
-      return this._http.get<any[]>(this.baseUrl + "/pe/", { params: params });
+      return this._http.get<PeImportDllTable[]>(this.baseUrl + "/pe/", { params: params });
   }
 
   // get header info

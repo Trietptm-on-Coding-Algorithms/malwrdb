@@ -545,7 +545,28 @@ class PeAction(Resource):
 
     def get_import_info(self):
         """Get pe import info."""
-        return "success"
+        sample_id = request.args.get("sample_id", None)
+        if not sample_id:
+            raise Exception("no sample id provided!")
+
+        from models_pe import PeImportDllTable
+
+        q_import_dll = PeImportDllTable.objects(sample_id=sample_id)
+        if q_import_dll.count() == 0:
+            raise Exception("0 import dll table found for sample_id %s" % sample_id)
+
+        ret = []
+        for import_dll in q_import_dll:
+
+            import_dll_ui = {"dll_name": import_dll.dll_name}
+            import_dll_ui["value_dict"] = pe_value_list_to_dict(import_dll)
+            import_dll_ui["item_list"] = []
+            for item in import_dll.import_item_list:
+                import_dll_ui["item_list"].append(item.json_ui())
+
+            ret.append(import_dll_ui)
+
+        return ret
 
     def get_export_info(self):
         """Get pe export info."""
