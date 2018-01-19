@@ -10,6 +10,7 @@
 
 import traceback
 from datetime import datetime
+from pprint import pformat
 
 import pefile
 from celery.utils.log import get_task_logger
@@ -49,7 +50,8 @@ def task_analyze_ref_file_as_sample(self, ref_file_id):
 
     # 0. prepare stuff
 
-    pe = pefile.PE(data=ref_file._binary)
+    pe = pefile.PE(data=ref_file._binary)  # , fast_load=True)
+    # logger.error(pformat(pe.dump_dict()))
 
     try:
 

@@ -38,4 +38,4 @@ class PeImportDllTable{
 
 
 
-export { PeSample, PeValueStructure, PeSection, PeImportDllTable }
+export { PeSample, PeValueStructure, PeSection, PeImportDllItem, PeImportDllTable }

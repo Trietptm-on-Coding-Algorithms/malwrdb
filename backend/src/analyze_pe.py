@@ -128,7 +128,7 @@ def analyze_pe_import_table(celery_task_id, pe, sample_tmp_id, stage_num):
     stage_db.save()
 
     try:
-        pe.parse_data_directories()
+        pe.parse_data_directories([0])
         if hasattr(pe, "DIRECTORY_ENTRY_IMPORT"):
 
             for import_dll in pe.DIRECTORY_ENTRY_IMPORT:
@@ -145,8 +145,6 @@ def analyze_pe_import_table(celery_task_id, pe, sample_tmp_id, stage_num):
 
                 for import_item in import_dll.imports:
 
-                    logger.error(import_item.name)
-
                     import_item_db = PeImportDllItem()
                     import_item_db.name = to_str(import_item.name)
                     import_item_db.ordinal = import_item.ordinal
@@ -156,8 +154,6 @@ def analyze_pe_import_table(celery_task_id, pe, sample_tmp_id, stage_num):
                         import_dll_db.import_item_list.append(import_item_db)
                     else:
                         logger.error("import item has none name for dll %s" % import_dll.dll)
-
-                    logger.error(len(import_dll_db.import_item_list))
 
                 import_dll_db.save()
 
@@ -191,7 +187,7 @@ def analyze_pe_export_table(celery_task_id, pe, sample_tmp_id, stage_num):
     stage_db.save()
 
     try:
-        pe.parse_data_directories([1])
+        pe.parse_data_directories()
 
         if hasattr(pe, "DIRECTORY_ENTRY_EXPORT"):
 
@@ -201,6 +197,7 @@ def analyze_pe_export_table(celery_task_id, pe, sample_tmp_id, stage_num):
 
         else:
 
+            logger.error("no export table parsed!")
             stage_db.finish_status = "no export table parsed!"
 
         # stage
