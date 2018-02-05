@@ -23,16 +23,16 @@ class TaskStage(mongoengine.Document):
     stage_num = mongoengine.IntField(required=True)
     stage_name = mongoengine.StringField(required=True)
 
-    start_time = mongoengine.DateTimeField(default=datetime.now())  # equal to create_time, and almost same with add_time
+    start_time = mongoengine.DateTimeField(default=datetime.now(tz=None))  # equal to create_time, and almost same with add_time
     finish_time = mongoengine.DateTimeField()
     finish_status = mongoengine.StringField()
 
-    add_time = mongoengine.DateTimeField(default=datetime.now())
+    add_time = mongoengine.DateTimeField(default=datetime.now(tz=None))
     update_time = mongoengine.DateTimeField()
 
     def clean(self):
         """When save, set self.update_time."""
-        self.update_time = datetime.now()
+        self.update_time = datetime.now(tz=None)
 
     def json_ui(self):
         """Json object return to UI."""
@@ -70,12 +70,12 @@ class TaskHistory(mongoengine.Document):
     # task_type: compare samples to find similarity
     # ...
 
-    add_time = mongoengine.DateTimeField(default=datetime.now())
+    add_time = mongoengine.DateTimeField(default=datetime.now(tz=None))
     update_time = mongoengine.DateTimeField()
 
     def clean(self):
         """When save, set self.update_time."""
-        self.update_time = datetime.now()
+        self.update_time = datetime.now(tz=None)
 
     def json_ui(self):
         """Json object return to UI."""

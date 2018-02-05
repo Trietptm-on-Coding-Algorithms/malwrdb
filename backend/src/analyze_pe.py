@@ -62,7 +62,7 @@ def analyze_pe_header(celery_task_id, pe, sample_tmp_id, stage_num):
 
         # save stage to db
 
-        stage_db.finish_time = datetime.now()
+        stage_db.finish_time = datetime.now(tz=None)
         stage_db.finish_status = "success"
         stage_db.save()
 
@@ -75,7 +75,7 @@ def analyze_pe_header(celery_task_id, pe, sample_tmp_id, stage_num):
 
         # save stage to db
 
-        stage_db.finish_time = datetime.now()
+        stage_db.finish_time = datetime.now(tz=None)
         stage_db.finish_status = "fail!"
         stage_db.save()
 
@@ -105,14 +105,14 @@ def analyze_pe_sections(celery_task_id, pe, sample_tmp_id, stage_num):
 
         # stage
 
-        stage_db.finish_time = datetime.now()
+        stage_db.finish_time = datetime.now(tz=None)
         stage_db.finish_status = "success"
         stage_db.save()
 
     except:
         PeSection.objects(sample_id=sample_tmp_id).delete()
 
-        stage_db.finish_time = datetime.now()
+        stage_db.finish_time = datetime.now(tz=None)
         stage_db.finish_status = "fail!"
         stage_db.save()
 
@@ -165,13 +165,13 @@ def analyze_pe_import_table(celery_task_id, pe, sample_tmp_id, stage_num):
 
         # stage
 
-        stage_db.finish_time = datetime.now()
+        stage_db.finish_time = datetime.now(tz=None)
         stage_db.save()
 
     except:
         PeImportDllTable.objects(sample_id=sample_tmp_id).delete()
 
-        stage_db.finish_time = datetime.now()
+        stage_db.finish_time = datetime.now(tz=None)
         stage_db.finish_status = "fail!"
         stage_db.save()
 
@@ -202,13 +202,13 @@ def analyze_pe_export_table(celery_task_id, pe, sample_tmp_id, stage_num):
 
         # stage
 
-        stage_db.finish_time = datetime.now()
+        stage_db.finish_time = datetime.now(tz=None)
         stage_db.save()
 
     except:
         PeImportDllTable.objects(sample_id=sample_tmp_id).delete()
 
-        stage_db.finish_time = datetime.now()
+        stage_db.finish_time = datetime.now(tz=None)
         stage_db.finish_status = "fail!"
         stage_db.save()
 

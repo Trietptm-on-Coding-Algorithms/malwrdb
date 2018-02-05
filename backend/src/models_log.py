@@ -23,7 +23,7 @@ class LogLine(mongoengine.Document):
     level = mongoengine.StringField(required=True)
     info = mongoengine.StringField(required=True)
 
-    add_time = mongoengine.DateTimeField(default=datetime.now())
+    add_time = mongoengine.DateTimeField(default=datetime.now(tz=None))
 
     def json_ui(self):
         """Json object return to UI."""

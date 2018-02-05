@@ -26,12 +26,12 @@ class PeBaseDocument(mongoengine.Document):
 
     sample_id = mongoengine.StringField(required=True)
 
-    add_time = mongoengine.DateTimeField(default=datetime.now())
+    add_time = mongoengine.DateTimeField(default=datetime.now(tz=None))
     update_time = mongoengine.DateTimeField()
 
     def clean(self):
         """Update self.update_time."""
-        self.update_time = datetime.now()
+        self.update_time = datetime.now(tz=None)
 
     def json_ui(self):
         """Json object return to UI."""

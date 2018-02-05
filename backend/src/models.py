@@ -22,12 +22,12 @@ class RefGroup(mongoengine.Document):
 
     group_id = mongoengine.StringField(required=True)   # random gened string
 
-    add_time = mongoengine.DateTimeField(default=datetime.now())
+    add_time = mongoengine.DateTimeField(default=datetime.now(tz=None))
     update_time = mongoengine.DateTimeField()
 
     def clean(self):
         """Set update_time."""
-        self.update_time = datetime.now()
+        self.update_time = datetime.now(tz=None)
 
     def json_ui(self):
         """Json object return to UI."""
@@ -116,7 +116,7 @@ class Sample(mongoengine.Document):
     malware_family_list = mongoengine.ListField()
 
     analyze_time = mongoengine.DateTimeField()
-    add_time = mongoengine.DateTimeField(default=datetime.now())
+    add_time = mongoengine.DateTimeField(default=datetime.now(tz=None))
     update_time = mongoengine.DateTimeField()
 
     def clean(self):
@@ -131,7 +131,7 @@ class Sample(mongoengine.Document):
         else:
             self.sample_size = 0
 
-        self.update_time = datetime.now()
+        self.update_time = datetime.now(tz=None)
 
     def to_filter(self):
         """What?."""

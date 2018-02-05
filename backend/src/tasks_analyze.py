@@ -45,14 +45,14 @@ def replace_ref_file_by_sample(celery_task_id, sample_tmp_id, stage_num, ref_fil
                 sample_belong_to.sample_relative_path = file_belong_to.file_relative_path
             sample_belong_to.save()
 
-            stage_db.finish_time = datetime.now()
+            stage_db.finish_time = datetime.now(tz=None)
             stage_db.finish_status = "success"
             stage_db.save()
 
         except:
             # save stage to db
 
-            stage_db.finish_time = datetime.now()
+            stage_db.finish_time = datetime.now(tz=None)
             stage_db.finish_status = "fail!"
             stage_db.save()
 
@@ -72,12 +72,12 @@ def replace_ref_file_by_sample(celery_task_id, sample_tmp_id, stage_num, ref_fil
         ref_file.delete()
         RefFileBelongTo.objects(ref_file_id=str(ref_file.pk)).delete()
 
-        stage_db.finish_time = datetime.now()
+        stage_db.finish_time = datetime.now(tz=None)
         stage_db.finish_status = "success"
         stage_db.save()
 
     except:
-        stage_db.finish_time = datetime.now()
+        stage_db.finish_time = datetime.now(tz=None)
         stage_db.finish_status = "fail!"
         stage_db.save()
 

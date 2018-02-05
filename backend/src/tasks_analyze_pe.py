@@ -81,7 +81,7 @@ def task_analyze_ref_file_as_sample(self, ref_file_id):
 
         # update Sample.analyze_time
 
-        sample_tmp.analyze_time = datetime.now()
+        sample_tmp.analyze_time = datetime.now(tz=None)
         sample_tmp.save()
 
         # Let Sample has same relationship with RefFile, then Delete RefFile and it's relationships

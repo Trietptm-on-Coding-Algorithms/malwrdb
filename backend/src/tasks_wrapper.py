@@ -69,7 +69,7 @@ def cancel_celery_task(task_id):
         raise Exception("0 or more than 1 TaskHistory by task_id")
 
     history = q_history[0]
-    history.finish_time = datetime.now()
+    history.finish_time = datetime.now(tz=None)
     history.finish_status = "canceled"
     history.save()
 
@@ -103,7 +103,7 @@ def analyze_ref_file_as_sample(ref_file_id):
     task_history = TaskHistory()
     task_history.task_type = TASK_TYPE_ANALYZE_REFFILE_AS_SAMPLE
     task_history.ref_file_id = ref_file_id
-    task_history.create_time = datetime.now()
+    task_history.create_time = datetime.now(tz=None)
     task_history.analyze_type = "PE32"
     task_history.celery_task_id = task_result.task_id
     task_history.latest_status = task_result.state
@@ -129,7 +129,7 @@ def check_close_task_history():
     while True:
         for history in get_task_history_not_closed():
             if not has_not_finished_task(history.celery_task_id):
-                history.finish_time = datetime.now()
+                history.finish_time = datetime.now(tz=None)
                 history.finish_status = "force close"
                 history.save()
         time.sleep(5)
