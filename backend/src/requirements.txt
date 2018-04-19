@@ -1,7 +1,0 @@
-flask
-flask_mongoengine
-flask_restful
-flask_cors
-Celery
-redis
-pefile
